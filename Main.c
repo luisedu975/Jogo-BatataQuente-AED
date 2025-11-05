@@ -8,19 +8,33 @@
 // --- Configurações do Jogo ---
 #define LARGURA_TELA 800
 #define ALTURA_TELA 600
-#define NUM_JOGADORES 6
+
+// --- AJUSTE: Número de jogadores agora é variável ---
+#define MIN_JOGADORES 2
+#define MAX_JOGADORES 12
+#define DEFAULT_JOGADORES 6
+
 #define RAIO_CIRCULO 200
 #define TAMANHO_FONTE 20
 #define TAMANHO_NOME 20
 
-// Enum para os estados do jogo (Menu) 
+// --- AJUSTE: Caminhos das Imagens ---
+// (Ajuste a extensão .png se for outra)
+#define PATH_MENU "Sprites/Imagens/bq3.png"
+#define PATH_B2 "Sprites/Imagens/bq2.png"
+#define PATH_B4 "Sprites/Imagens/bq4.png"
+#define PATH_B9 "Sprites/Imagens/bq9.png"
+#define PATH_B6 "Sprites/Imagens/bq6.png"
+
+
+// Enum para os estados do jogo (Menu)
 typedef enum GameScreen {
     MENU,
     GAMEPLAY,
     END_GAME
 } GameScreen;
 
-// --- Estrutura de Dados (Conforme seu exemplo) --- [cite: 18]
+// --- Estrutura de Dados (Conforme seu exemplo) ---
 typedef struct Jogador {
     char nome[TAMANHO_NOME];
     Vector2 posTela; // Posição para desenhar na raylib
@@ -35,11 +49,8 @@ typedef struct {
     int tamanho;
 } ListaCircular;
 
-// --- Funções da Estrutura de Dados (Requisito 3.c / 3.e) --- 
+// --- Funções da Estrutura de Dados (Requisito 3.c / 3.e) ---
 
-/**
- * [Função DS 1] Cria e inicializa uma nova lista circular vazia.
- */
 ListaCircular* criarLista() {
     ListaCircular* lista = (ListaCircular*)malloc(sizeof(ListaCircular));
     if (lista != NULL) {
@@ -50,9 +61,6 @@ ListaCircular* criarLista() {
     return lista;
 }
 
-/**
- * [Função DS 2] Insere um novo jogador na lista (baseado no seu código de 'inserir').
- */
 void inserirJogador(ListaCircular* lista, const char* nome, Vector2 pos, Color cor) {
     Jogador* novo = (Jogador*)malloc(sizeof(Jogador));
     if (novo == NULL) return;
@@ -73,10 +81,6 @@ void inserirJogador(ListaCircular* lista, const char* nome, Vector2 pos, Color c
     lista->tamanho++;
 }
 
-/**
- * [Função DS 3] Remove um jogador específico da lista.
- * Esta é a lógica central $O(n)$ que discutimos.
- */
 void removerJogador(ListaCircular* lista, Jogador* jogadorEliminado) {
     if (lista->head == NULL) return; // Lista vazia
 
@@ -107,16 +111,10 @@ void removerJogador(ListaCircular* lista, Jogador* jogadorEliminado) {
     lista->tamanho--;
 }
 
-/**
- * [Função DS 4] Retorna o tamanho atual da lista.
- */
 int getTamanho(ListaCircular* lista) {
     return lista->tamanho;
 }
 
-/**
- * [Função DS 5] Imprime a lista no console (para debug).
- */
 void imprimirListaConsole(ListaCircular* lista) {
     if (lista->head == NULL) {
         printf("LISTA VAZIA\n");
@@ -131,14 +129,15 @@ void imprimirListaConsole(ListaCircular* lista) {
     printf("... (volta ao %s)\n", lista->head->nome);
 }
 
-// --- Funções do Algoritmo de Ordenação (Requisito 3.d) --- 
+// --- Funções do Algoritmo de Ordenação (Requisito 3.d) ---
 
-// Armazena a ordem de eliminação
-char placarEliminacao[NUM_JOGADORES][TAMANHO_NOME];
+// --- AJUSTE: Array de placar agora usa MAX_JOGADORES ---
+char placarEliminacao[MAX_JOGADORES][TAMANHO_NOME];
 int placarIndex = 0;
 
 void adicionarAoPlacar(const char* nome) {
-    if (placarIndex < NUM_JOGADORES) {
+    // --- AJUSTE: Checa contra MAX_JOGADORES ---
+    if (placarIndex < MAX_JOGADORES) {
         strcpy(placarEliminacao[placarIndex], nome);
         placarIndex++;
     }
@@ -149,12 +148,10 @@ void ordenarPlacar() {
     for (int i = 0; i < placarIndex - 1; i++) {
         int min_idx = i;
         for (int j = i + 1; j < placarIndex; j++) {
-            // Compara strings
             if (strcmp(placarEliminacao[j], placarEliminacao[min_idx]) < 0) {
                 min_idx = j;
             }
         }
-        // Troca (swap)
         char temp[TAMANHO_NOME];
         strcpy(temp, placarEliminacao[min_idx]);
         strcpy(placarEliminacao[min_idx], placarEliminacao[i]);
@@ -169,7 +166,23 @@ int main(void) {
     SetTargetFPS(60);
     srand(time(NULL));
 
-    GameScreen telaAtual = MENU; // Começa no Menu 
+    // --- AJUSTE: Carregando as texturas (Imagens) ---
+    Texture2D texMenu = LoadTexture(PATH_MENU);
+    Texture2D texBatataPassando1 = LoadTexture(PATH_B2);
+    Texture2D texBatataPassando2 = LoadTexture(PATH_B4);
+    Texture2D texBatataPassando3 = LoadTexture(PATH_B9);
+    Texture2D texBatataQueimou = LoadTexture(PATH_B6);
+
+    // Array para animação
+    Texture2D texAnimBatata[3] = { texBatataPassando1, texBatataPassando2, texBatataPassando3 };
+    int frameAnimBatata = 0; // Frame atual da animação
+
+    GameScreen telaAtual = MENU; // Começa no Menu
+    
+    // --- AJUSTE: Variáveis do Menu ---
+    int menuSelecao = 0; // 0: Iniciar, 1: Jogadores, 2: Sair
+    int numJogadoresAtual = DEFAULT_JOGADORES;
+    bool querSair = false; // Para fechar o jogo
     
     // Variáveis de estado do jogo
     ListaCircular* listaJogadores = criarLista();
@@ -185,40 +198,67 @@ int main(void) {
     Vector2 centroTela = { LARGURA_TELA / 2.0f, ALTURA_TELA / 2.0f };
 
     // --- Loop Principal do Jogo ---
-    while (!WindowShouldClose()) {
+    // --- AJUSTE: Adicionado !querSair ---
+    while (!WindowShouldClose() && !querSair) {
 
         // --- Lógica de Atualização (Update) ---
         switch (telaAtual) {
             case MENU: {
-                if (IsKeyPressed(KEY_ENTER)) {
-                    // Limpa estado anterior (se houver)
-                    while (getTamanho(listaJogadores) > 0) {
-                        removerJogador(listaJogadores, listaJogadores->head);
-                    }
-                    placarIndex = 0;
-                    placarFoiOrdenado = false;
+                // Navegação no Menu
+                if (IsKeyPressed(KEY_DOWN)) {
+                    menuSelecao = (menuSelecao + 1) % 3; // 0, 1, 2
+                }
+                if (IsKeyPressed(KEY_UP)) {
+                    menuSelecao = (menuSelecao - 1 + 3) % 3; // 0, 1, 2
+                }
 
-                    // [LÓGICA DS] Cria o círculo de jogadores
-                    for (int i = 0; i < NUM_JOGADORES; i++) {
-                        float angulo = (float)i / NUM_JOGADORES * (2 * PI); // Posição em radianos
-                        Vector2 pos = {
-                            centroTela.x + RAIO_CIRCULO * cosf(angulo),
-                            centroTela.y + RAIO_CIRCULO * sinf(angulo)
-                        };
-                        char nome[TAMANHO_NOME];
-                        sprintf(nome, "Jogador %d", i + 1);
-                        // Cor aleatória
-                        Color cor = { (unsigned char)GetRandomValue(100, 250),
-                                      (unsigned char)GetRandomValue(100, 250),
-                                      (unsigned char)GetRandomValue(100, 250), 255 };
-                        
-                        // [CHAMADA DS] Inserindo na lista
-                        inserirJogador(listaJogadores, nome, pos, cor);
+                // Interação com o Menu
+                if (menuSelecao == 1) { // Opção "Jogadores"
+                    if (IsKeyPressed(KEY_RIGHT) && numJogadoresAtual < MAX_JOGADORES) {
+                        numJogadoresAtual++;
                     }
-                    
-                    batataAtual = listaJogadores->head; // Começa com o primeiro
-                    timerMusica = (float)GetRandomValue(3, 8); // "Música" toca por 3-8 seg
-                    telaAtual = GAMEPLAY;
+                    if (IsKeyPressed(KEY_LEFT) && numJogadoresAtual > MIN_JOGADORES) {
+                        numJogadoresAtual--;
+                    }
+                } else if (IsKeyPressed(KEY_ENTER)) {
+                    switch (menuSelecao) {
+                        case 0: { // INICIAR
+                            // Limpa estado anterior (se houver)
+                            while (getTamanho(listaJogadores) > 0) {
+                                removerJogador(listaJogadores, listaJogadores->head);
+                            }
+                            placarIndex = 0;
+                            placarFoiOrdenado = false;
+                            frameAnimBatata = 0;
+
+                            // [LÓGICA DS] Cria o círculo de jogadores (com o número escolhido)
+                            for (int i = 0; i < numJogadoresAtual; i++) {
+                                float angulo = (float)i / numJogadoresAtual * (2 * PI); // Posição em radianos
+                                Vector2 pos = {
+                                    centroTela.x + RAIO_CIRCULO * cosf(angulo),
+                                    centroTela.y + RAIO_CIRCULO * sinf(angulo)
+                                };
+                                char nome[TAMANHO_NOME];
+                                sprintf(nome, "Jogador %d", i + 1);
+                                Color cor = { (unsigned char)GetRandomValue(100, 250),
+                                              (unsigned char)GetRandomValue(100, 250),
+                                              (unsigned char)GetRandomValue(100, 250), 255 };
+                                
+                                inserirJogador(listaJogadores, nome, pos, cor);
+                            }
+                            
+                            batataAtual = listaJogadores->head; // Começa com o primeiro
+                            timerMusica = (float)GetRandomValue(3, 8); // "Música" toca por 3-8 seg
+                            telaAtual = GAMEPLAY;
+                        } break;
+                        
+                        case 1: // Opção "Jogadores" - Enter não faz nada
+                            break; 
+                            
+                        case 2: { // SAIR
+                            querSair = true;
+                        } break;
+                    }
                 }
             } break;
 
@@ -230,22 +270,17 @@ int main(void) {
                         
                         Jogador* jogadorEliminado = batataAtual;
                         
-                        // Salva para o placar 
                         adicionarAoPlacar(jogadorEliminado->nome);
                         
-                        // [LÓGICA DS] A batata passa para o próximo ANTES de remover
                         batataAtual = batataAtual->prox; 
 
-                        // [CHAMADA DS] Remove o jogador da lista
                         removerJogador(listaJogadores, jogadorEliminado);
                         imprimirListaConsole(listaJogadores); // Debug
 
-                        // Verifica condição de vitória
                         if (getTamanho(listaJogadores) == 1) {
-                            adicionarAoPlacar(listaJogadores->head->nome); // Adiciona o vencedor
+                            adicionarAoPlacar(listaJogadores->head->nome);
                             telaAtual = END_GAME;
                         } else {
-                            // Prepara nova rodada
                             timerMusica = (float)GetRandomValue(3, 8);
                         }
                     }
@@ -253,21 +288,22 @@ int main(void) {
                     timerMusica -= GetFrameTime();
                     timerPasso -= GetFrameTime();
 
-                    // "Música" parou (Queimou!)
                     if (timerMusica <= 0.0f) {
                         timerQueimou = 2.0f; // Pausa por 2 segundos
                     }
-                    // Passa a batata
                     else if (timerPasso <= 0.0f) {
-                        // [LÓGICA DS] Esta é a navegação na estrutura! 
+                        // [LÓGICA DS] Esta é a navegação na estrutura!
                         batataAtual = batataAtual->prox;
+                        
+                        // --- AJUSTE: Atualiza o frame da animação ---
+                        frameAnimBatata = (frameAnimBatata + 1) % 3; // Cicla 0, 1, 2
+                        
                         timerPasso = 0.2f; // Reseta velocidade
                     }
                 }
             } break;
 
             case END_GAME: {
-                // [CHAMADA DS/ORDENAÇÃO] Ordena o placar, mas só uma vez 
                 if (!placarFoiOrdenado) {
                     //ordenarPlacar(); // Ative se quiser ordenar por nome
                     placarFoiOrdenado = true;
@@ -285,8 +321,21 @@ int main(void) {
 
         switch (telaAtual) {
             case MENU: {
-                DrawText("BATATA QUENTE CIRCULAR", centroTela.x - MeasureText("BATATA QUENTE CIRCULAR", 40) / 2, centroTela.y - 40, 40, DARKGRAY);
-                DrawText("Pressione ENTER para começar", centroTela.x - MeasureText("Pressione ENTER para começar", 20) / 2, centroTela.y + 20, 20, GRAY);
+                // --- AJUSTE: Desenha a imagem do menu ---
+                // Centraliza a imagem
+                float imgX = centroTela.x - texMenu.width / 2.0f;
+                float imgY = 100;
+                DrawTexture(texMenu, imgX, imgY, WHITE);
+                
+                // Desenha as opções do menu
+                int posY = 350;
+                DrawText("Iniciar", centroTela.x - MeasureText("Iniciar", 30) / 2, posY, 30, (menuSelecao == 0) ? MAROON : DARKGRAY);
+                posY += 40;
+                DrawText(TextFormat("Jogadores: < %d >", numJogadoresAtual), centroTela.x - MeasureText(TextFormat("Jogadores: < %d >", numJogadoresAtual), 30) / 2, posY, 30, (menuSelecao == 1) ? MAROON : DARKGRAY);
+                posY += 40;
+                DrawText("Sair", centroTela.x - MeasureText("Sair", 30) / 2, posY, 30, (menuSelecao == 2) ? MAROON : DARKGRAY);
+                
+                DrawText("Use SETAS (CIMA/BAIXO) para navegar", 10, ALTURA_TELA - 30, 20, GRAY);
             } break;
 
             case GAMEPLAY: {
@@ -300,9 +349,24 @@ int main(void) {
                     } while (temp != listaJogadores->head);
                 }
 
-                // Desenha a batata
+                // --- AJUSTE: Desenha a batata com Texturas ---
                 if (batataAtual != NULL) {
-                    DrawCircleV(batataAtual->posTela, 25, (timerQueimou > 0) ? ORANGE : RED);
+                    Texture2D texBatataAtual;
+                    
+                    if (timerQueimou > 0) {
+                        // Se queimou, usa a bq6
+                        texBatataAtual = texBatataQueimou;
+                    } else {
+                        // Senão, usa o frame atual da animação (bq2, bq4, bq9)
+                        texBatataAtual = texAnimBatata[frameAnimBatata];
+                    }
+
+                    // Centraliza a textura no jogador
+                    Vector2 texPos = {
+                        batataAtual->posTela.x - texBatataAtual.width / 2.0f,
+                        batataAtual->posTela.y - texBatataAtual.height / 2.0f
+                    };
+                    DrawTextureV(texBatataAtual, texPos, WHITE);
                 }
 
                 // Desenha Timer
@@ -320,7 +384,6 @@ int main(void) {
                 DrawText("FIM DE JOGO!", centroTela.x - MeasureText("FIM DE JOGO!", 40) / 2, 50, 40, DARKGRAY);
                 DrawText(TextFormat("O VENCEDOR É: %s", vencedor), centroTela.x - MeasureText(TextFormat("O VENCEDOR É: %s", vencedor), 30) / 2, 100, 30, GOLD);
 
-                // Desenha o placar de eliminação 
                 DrawText("Ordem de Eliminacao (do ultimo pro primeiro):", 150, 180, 20, DARKGRAY);
                 for (int i = 0; i < placarIndex - 1; i++) { // -1 para não mostrar o vencedor
                      DrawText(TextFormat("%d. %s", (placarIndex - 1 - i), placarEliminacao[i]), 200, 220 + (i * 30), 20, GRAY);
@@ -334,6 +397,14 @@ int main(void) {
     }
 
     // --- Limpeza ---
+    // --- AJUSTE: Descarrega todas as texturas ---
+    UnloadTexture(texMenu);
+    UnloadTexture(texBatataPassando1);
+    UnloadTexture(texBatataPassando2);
+    UnloadTexture(texBatataPassando3);
+    UnloadTexture(texBatataQueimou);
+    
+    // Limpa a lista
     while (getTamanho(listaJogadores) > 0) {
         removerJogador(listaJogadores, listaJogadores->head);
     }
