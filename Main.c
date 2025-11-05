@@ -428,7 +428,22 @@ int main(void) {
 
         // --- Lógica de Desenho (Draw) ---
         BeginDrawing();
-        ClearBackground(RAYWHITE);
+        Color azulSuave = {135, 206, 250, 245};
+
+        switch (telaAtual) {
+            case MENU:
+                ClearBackground(azulSuave);   
+                break;
+            case CUSTOMIZE_NAMES:
+                ClearBackground(LIGHTGRAY); 
+                break;
+            case GAMEPLAY:
+                ClearBackground(BEIGE);     
+                break;
+            case END_GAME:
+                ClearBackground(DARKGRAY);  
+                break;
+        }
 
         switch (telaAtual) {
             case MENU: {

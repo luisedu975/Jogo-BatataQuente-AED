@@ -1,34 +1,38 @@
-# Prerequisites
+# ---------------------------
+# Compilação C / C++
+# ---------------------------
+
+# Arquivos de dependência
 *.d
 
-# Object files
+# Objetos compilados
 *.o
 *.ko
 *.obj
 *.elf
 
-# Linker output
+# Saídas do linker
 *.ilk
 *.map
 *.exp
 
-# Precompiled Headers
+# Cabeçalhos pré-compilados
 *.gch
 *.pch
 
-# Libraries
+# Bibliotecas
 *.lib
 *.a
 *.la
 *.lo
 
-# Shared objects (inc. Windows DLLs)
+# Objetos compartilhados (incluindo DLLs do Windows)
 *.dll
 *.so
 *.so.*
 *.dylib
 
-# Executables
+# Executáveis
 *.exe
 *.out
 *.app
@@ -36,13 +40,19 @@
 *.x86_64
 *.hex
 
-# Debug files
+# ---------------------------
+# Debug / Logs
+# ---------------------------
 *.dSYM/
 *.su
 *.idb
 *.pdb
+*.dwo
+*.log
 
-# Kernel Module Compile Results
+# ---------------------------
+# Kernel / Build temporários
+# ---------------------------
 *.mod*
 *.cmd
 .tmp_versions/
@@ -51,5 +61,40 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
-# debug information files
-*.dwo
+# ---------------------------
+# Configurações locais (VS Code, etc.)
+# ---------------------------
+.vscode/
+*.code-workspace
+
+# ---------------------------
+# Sistema Operacional
+# ---------------------------
+# Windows
+Thumbs.db
+Desktop.ini
+
+# macOS
+.DS_Store
+
+# Linux
+*~
+
+# ---------------------------
+# Outros temporários
+# ---------------------------
+*.bak
+*.tmp
+*.swp
+
+# ---------------------------
+# Importante: NÃO ignorar sprites nem README
+# ---------------------------
+# ! significa “não ignore” — força a inclusão
+!*.png
+!*.jpg
+!*.jpeg
+!*.bmp
+!*.wav
+!*.mp3
+!README.md
