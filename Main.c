@@ -90,6 +90,23 @@ void inserirJogador(ListaCircular* lista, const char* nome, Vector2 pos, Color c
     lista->tamanho++;
 }
 
+void desenharJogador(Jogador* j) {
+    Vector2 pos = j->posTela;
+
+    // Cabeça maior
+    DrawCircleV((Vector2){pos.x, pos.y - 35}, 15, j->cor);
+
+    // Corpo mais longo
+    DrawRectangleV((Vector2){pos.x - 12, pos.y - 20}, (Vector2){24, 40}, j->cor);
+
+    // Braços
+    DrawLine(pos.x - 20, pos.y, pos.x + 20, pos.y, j->cor);
+
+    // Pernas mais longas
+    DrawLine(pos.x - 12, pos.y + 20, pos.x - 6, pos.y + 50, j->cor);
+    DrawLine(pos.x + 12, pos.y + 20, pos.x + 6, pos.y + 50, j->cor);
+}
+
 void removerJogador(ListaCircular* lista, Jogador* jogadorEliminado) {
     if (lista->head == NULL) return;
     Jogador* anterior = lista->tail;
@@ -354,11 +371,9 @@ int main(void) {
                                     centroTela.x + RAIO_CIRCULO * cosf(angulo),
                                     centroTela.y + RAIO_CIRCULO * sinf(angulo)
                                 };
-                                Color cor = { (unsigned char)GetRandomValue(100, 250),
-                                              (unsigned char)GetRandomValue(100, 250),
-                                              (unsigned char)GetRandomValue(100, 250), 255 };
+                                Color cor = GRAY;
                                 
-                                inserirJogador(listaJogadores, playerNames[i], pos, cor); 
+                                inserirJogador(listaJogadores,  playerNames[i], pos, cor); 
                             }
                             
                             batataAtual = listaJogadores->head;
@@ -521,7 +536,7 @@ int main(void) {
                 if (listaJogadores->head != NULL) {
                     Jogador* temp = listaJogadores->head;
                     do {
-                        DrawCircleV(temp->posTela, 20, temp->cor);
+                        desenharJogador(temp);
                         DrawText(temp->nome, temp->posTela.x - 30, temp->posTela.y + 25, 15, BLACK);
                         temp = temp->prox;
                     } while (temp != listaJogadores->head);
