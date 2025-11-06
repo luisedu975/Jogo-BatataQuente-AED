@@ -93,18 +93,15 @@ void inserirJogador(ListaCircular* lista, const char* nome, Vector2 pos, Color c
 void desenharJogador(Jogador* j) {
     Vector2 pos = j->posTela;
 
-    // Cabeça maior
     DrawCircleV((Vector2){pos.x, pos.y - 35}, 15, j->cor);
-
-    // Corpo mais longo
     DrawRectangleV((Vector2){pos.x - 12, pos.y - 20}, (Vector2){24, 40}, j->cor);
-
-    // Braços
-    DrawLine(pos.x - 20, pos.y, pos.x + 20, pos.y, j->cor);
-
-    // Pernas mais longas
+    DrawLine(pos.x - 28, pos.y, pos.x + 28, pos.y, j->cor);
     DrawLine(pos.x - 12, pos.y + 20, pos.x - 6, pos.y + 50, j->cor);
     DrawLine(pos.x + 12, pos.y + 20, pos.x + 6, pos.y + 50, j->cor);
+
+    int fontSize = 15;
+    float textWidth = MeasureText(j->nome, fontSize);
+    DrawText(j->nome, pos.x - textWidth / 2, pos.y + 55, fontSize, BLACK);
 }
 
 void removerJogador(ListaCircular* lista, Jogador* jogadorEliminado) {
@@ -524,9 +521,11 @@ int main(void) {
                 int posYBotao = 80 + numJogadoresAtual * 40;
                 DrawText("Confirmar e Iniciar", textBoxPosX + 150 - MeasureText("Confirmar e Iniciar", 20) / 2, posYBotao, 20, (nameBoxSelecao == numJogadoresAtual) ? MAROON : DARKGRAY);
                 
-                float imgX = LARGURA_TELA - texCustomize.width - 40;
-                float imgY = centroTela.y - texCustomize.height / 2.5f;
-                DrawTexture(texCustomize, (int)imgX, (int)imgY, WHITE);
+                // --- BATATA HARMÔNICA NA TELA DE CUSTOMIZAÇÃO ---
+                float escala = 0.86f; // tamanho ideal: visível, mas não exagerado
+                float imgX = LARGURA_TELA - texCustomize.width * escala + 22; // desloca um pouco da borda direita
+                float imgY = centroTela.y - texCustomize.height * escala / 1.4f + 83; // centraliza verticalmente com leve ajuste
+                DrawTextureEx(texCustomize, (Vector2){imgX, imgY}, 0.0f, escala, WHITE);
 
                 DrawText("Use CIMA/BAIXO, ENTER para editar, BACKSPACE para apagar. ESC para voltar.", 10, ALTURA_TELA - 50, 15, GRAY);
             } break;
@@ -536,11 +535,11 @@ int main(void) {
                 if (listaJogadores->head != NULL) {
                     Jogador* temp = listaJogadores->head;
                     do {
-                        desenharJogador(temp);
-                        DrawText(temp->nome, temp->posTela.x - 30, temp->posTela.y + 25, 15, BLACK);
+                        desenharJogador(temp);  // desenha o boneco e o nome centralizado
                         temp = temp->prox;
                     } while (temp != listaJogadores->head);
                 }
+
                 if (batataAtual != NULL) {
                     Texture2D texBatataAtual;
                     
@@ -579,12 +578,16 @@ int main(void) {
                 DrawText("FIM DE JOGO!", centroTela.x - MeasureText("FIM DE JOGO!", 40) / 2, 50, 40, DARKGRAY);
                 DrawText(TextFormat("O VENCEDOR É: %s", vencedor), centroTela.x - MeasureText(TextFormat("O VENCEDOR É: %s", vencedor), 30) / 2, 100, 30, GOLD);
 
-                int imgPosY = 180;
-                DrawTexture(texMenu, 50, imgPosY, WHITE);
+                // centraliza a sprite texMenu
+                float escalaMenu = ESCALA_MENU; // usa a constante que já tem (ou ajuste aqui)
+                float posXMenu = (LARGURA_TELA - texMenu.width * escalaMenu) / 2.0f;  // centro horizontal
+                float posYMenu = 140.0f; // ajusta pra cima/baixo se quiser (aqui fica um pouco abaixo do topo)
+                DrawTextureEx(texMenu, (Vector2){ posXMenu, posYMenu }, 0.0f, escalaMenu, WHITE);
 
-                int rankingPosX = 50 + texMenu.width + 50;
-                DrawText("Ordem de Eliminacao:", rankingPosX, imgPosY, 20, DARKGRAY);
-                DrawText("(Do ultimo pro primeiro)", rankingPosX, imgPosY + 25, 20, GRAY);
+                // reposiciona o bloco do ranking à direita da sprite centralizada
+                float larguraSpriteEscalada = texMenu.width * escalaMenu;
+                int rankingPosX = (int)(posXMenu + larguraSpriteEscalada + 30); // 30px de espaçamento à direita da sprite
+                int imgPosY = (int)posYMenu; // se ainda precisar do imgPosY em outras partes
                 
                 int listPosY = imgPosY + 60;
                 for (int i = 0; i < placarIndex - 1; i++) {
