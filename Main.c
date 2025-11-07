@@ -45,6 +45,12 @@ typedef enum {
     PERSONALIZADO  // 3
 } ModoTimer;
 
+// --- AJUSTE: Novo enum para Modo de Jogo ---
+typedef enum {
+    SOLO,         // 0 (1 Humano vs NPCs)
+    MULTIPLAYER   // 1 (Todos Humanos)
+} ModoJogo;
+
 // Função Helper para checar as duas teclas ENTER
 bool IsEnterPressed() {
     return IsKeyPressed(KEY_ENTER) || IsKeyPressed(KEY_KP_ENTER);
@@ -55,7 +61,6 @@ typedef struct Jogador {
     char nome[TAMANHO_NOME];
     Vector2 posTela;
     Color cor;
-    // --- AJUSTE: Identificador de Humano vs NPC ---
     bool ehHumano; 
     struct Jogador* prox;
 } Jogador;
@@ -67,7 +72,7 @@ typedef struct {
 } ListaCircular;
 
 // --- Funções da Estrutura de Dados ---
-
+// (Ocultas para encurtar, sem alterações)
 ListaCircular* criarLista() {
     ListaCircular* lista = (ListaCircular*)malloc(sizeof(ListaCircular));
     if (lista != NULL) {
@@ -78,17 +83,14 @@ ListaCircular* criarLista() {
     return lista;
 }
 
-// --- AJUSTE: InserirJogador agora recebe o status 'ehHumano' ---
 void inserirJogador(ListaCircular* lista, const char* nome, Vector2 pos, Color cor, bool ehHumano) {
     Jogador* novo = (Jogador*)malloc(sizeof(Jogador));
     if (novo == NULL) return;
-    
     strncpy(novo->nome, nome, TAMANHO_NOME - 1);
     novo->nome[TAMANHO_NOME - 1] = '\0';
     novo->posTela = pos;
     novo->cor = cor;
-    novo->ehHumano = ehHumano; // Define se é o jogador
-    
+    novo->ehHumano = ehHumano;
     if (lista->head == NULL) {
         lista->head = novo;
         lista->tail = novo;
@@ -100,7 +102,6 @@ void inserirJogador(ListaCircular* lista, const char* nome, Vector2 pos, Color c
     lista->tamanho++;
 }
 
-// (Função desenharJogador - Oculta para encurtar, sem alterações)
 void desenharJogador(Jogador* j) {
     Vector2 pos = j->posTela;
     DrawCircleV((Vector2){pos.x, pos.y - 35}, 15, j->cor);
@@ -113,7 +114,6 @@ void desenharJogador(Jogador* j) {
     DrawText(j->nome, pos.x - textWidth / 2, pos.y + 55, fontSize, BLACK);
 }
 
-// (Função removerJogador - Oculta para encurtar, sem alterações)
 void removerJogador(ListaCircular* lista, Jogador* jogadorEliminado) {
     if (lista->head == NULL) return;
     Jogador* anterior = lista->tail;
@@ -185,6 +185,14 @@ const char* getModoTimerTexto(ModoTimer modo) {
     }
 }
 
+// --- AJUSTE: Nova função para texto do Modo de Jogo ---
+const char* getModoJogoTexto(ModoJogo modo) {
+    switch (modo) {
+        case MULTIPLAYER: return "Multiplayer";
+        case SOLO: default: return "Solo";
+    }
+}
+
 float getNovoTimer(ModoTimer modo, float tempoPersonalizado, int numJogadoresInicio, int numEliminados) {
     // (Oculta para encurtar, sem alterações)
     if (modo == PERSONALIZADO) {
@@ -235,28 +243,28 @@ int main(void) {
 
     GameScreen telaAtual = MENU;
     
-    // (Variáveis do Menu - Ocultas para encurtar)
+    // Variáveis do Menu
     int menuSelecao = 0;
     int numJogadoresAtual = DEFAULT_JOGADORES;
     ModoTimer modoTimerAtual = ALEATORIO;
+    // --- AJUSTE: Nova variável de Modo de Jogo ---
+    ModoJogo modoJogoAtual = SOLO;
     float tempoPersonalizado = 5.0f;
-    int totalMenuOpcoes = 4;
+    int totalMenuOpcoes = 5; // Agora são 5 opções
     bool querSair = false;
 
-    // (Variáveis de Personalização - Ocultas para encurtar)
+    // Variáveis da Tela de Personalização
     char playerNames[MAX_JOGADORES][TAMANHO_NOME];
     int nameBoxSelecao = 0;
     bool nameBoxAtiva = false;
     int nameCharCount = 0;
     
-    // (Variáveis de Jogo)
+    // Variáveis de Jogo
     ListaCircular* listaJogadores = criarLista();
     Jogador* batataAtual = NULL;
     
     float timerMusica = 0.0f;
-    // --- AJUSTE: timerPasso removido, npcPassTimer adicionado ---
-    // float timerPasso = 0.2f; (REMOVIDO)
-    float npcPassTimer = 0.0f; // Timer de "reação" do NPC
+    float npcPassTimer = 0.0f;
     float timerQueimou = 0.0f;
     
     bool placarFoiOrdenado = false;
@@ -269,8 +277,8 @@ int main(void) {
         // --- Lógica de Atualização (Update) ---
         switch (telaAtual) {
             case MENU: {
-                // (Lógica do Menu - Oculta para encurtar, USA IsEnterPressed())
-                totalMenuOpcoes = (modoTimerAtual == PERSONALIZADO) ? 5 : 4;
+                // --- AJUSTE: Total de opções do menu dinâmico ---
+                totalMenuOpcoes = (modoTimerAtual == PERSONALIZADO) ? 6 : 5;
 
                 if (IsKeyPressed(KEY_DOWN)) {
                     menuSelecao = (menuSelecao + 1) % totalMenuOpcoes;
@@ -278,6 +286,7 @@ int main(void) {
                 if (IsKeyPressed(KEY_UP)) {
                     menuSelecao = (menuSelecao - 1 + totalMenuOpcoes) % totalMenuOpcoes;
                 }
+
                 if (menuSelecao == 1) { // Jogadores
                     if (IsKeyPressed(KEY_RIGHT) && numJogadoresAtual < MAX_JOGADORES) {
                         numJogadoresAtual++;
@@ -294,7 +303,13 @@ int main(void) {
                         modoTimerAtual = (modoTimerAtual - 1 + 4) % 4;
                     }
                 } 
-                else if (menuSelecao == 3 && modoTimerAtual == PERSONALIZADO) { // Tempo Fixo
+                // --- AJUSTE: Nova opção "Modo de Jogo" ---
+                else if (menuSelecao == 3) { // Modo de Jogo
+                    if (IsKeyPressed(KEY_RIGHT) || IsKeyPressed(KEY_LEFT)) {
+                        modoJogoAtual = (modoJogoAtual == SOLO) ? MULTIPLAYER : SOLO;
+                    }
+                }
+                else if (menuSelecao == 4 && modoTimerAtual == PERSONALIZADO) { // Tempo Fixo
                     if (IsKeyPressed(KEY_RIGHT) && tempoPersonalizado < 20.0f) {
                         tempoPersonalizado += 0.5f;
                     }
@@ -303,7 +318,7 @@ int main(void) {
                     }
                 }
                 else if (IsEnterPressed()) {
-                    int acaoSair = (modoTimerAtual == PERSONALIZADO) ? 4 : 3;
+                    int acaoSair = (modoTimerAtual == PERSONALIZADO) ? 5 : 4;
 
                     if (menuSelecao == 0) { // INICIAR
                         for (int i = 0; i < numJogadoresAtual; i++) {
@@ -321,28 +336,26 @@ int main(void) {
             } break;
 
             case CUSTOMIZE_NAMES: {
-                // (Lógica de Personalização - Oculta para encurtar, USA IsEnterPressed() e tem bugfix)
                 int totalOpcoesNome = numJogadoresAtual + 1; 
 
                 if (nameBoxAtiva) {
                     // --- MODO DE DIGITAÇÃO (COM CORREÇÃO DE BUG) ---
+                    // (Oculto para encurtar, sem alterações)
                     int key = GetCharPressed();
                     while (key > 0) {
                         if ((key >= 32) && (key <= 125) && (nameCharCount < TAMANHO_NOME - 1)) {
                             playerNames[nameBoxSelecao][nameCharCount] = (char)key;
                             nameCharCount++;
-                            playerNames[nameBoxSelecao][nameCharCount] = '\0'; // <-- CORREÇÃO
+                            playerNames[nameBoxSelecao][nameCharCount] = '\0';
                         }
                         key = GetCharPressed();
                     }
-
                     if (IsKeyPressedRepeat(KEY_BACKSPACE)) {
                         if (nameCharCount > 0) {
                             nameCharCount--;
-                            playerNames[nameBoxSelecao][nameCharCount] = '\0'; // <-- CORREÇÃO
+                            playerNames[nameBoxSelecao][nameCharCount] = '\0';
                         }
                     }
-
                     if (IsEnterPressed() || IsKeyPressed(KEY_DOWN) || IsKeyPressed(KEY_UP)) {
                         nameBoxAtiva = false;
                     }
@@ -372,22 +385,26 @@ int main(void) {
                                     centroTela.x + RAIO_CIRCULO * cosf(angulo),
                                     centroTela.y + RAIO_CIRCULO * sinf(angulo)
                                 };
-                                
                                 Color cor = { (unsigned char)GetRandomValue(100, 250),
                                               (unsigned char)GetRandomValue(100, 250),
                                               (unsigned char)GetRandomValue(100, 250), 255 };
                                 
-                                // --- AJUSTE: Jogador 1 (i=0) é o humano ---
-                                bool ehHumano = (i == 0);
+                                // --- AJUSTE: Lógica Humano/NPC baseada no Modo de Jogo ---
+                                bool ehHumano = false;
+                                if (modoJogoAtual == MULTIPLAYER) {
+                                    ehHumano = true; // Todos são humanos
+                                } else {
+                                    ehHumano = (i == 0); // Apenas o Jogador 1 é humano
+                                }
+                                
                                 inserirJogador(listaJogadores,  playerNames[i], pos, cor, ehHumano); 
                             }
                             
                             batataAtual = listaJogadores->head;
                             timerMusica = getNovoTimer(modoTimerAtual, tempoPersonalizado, numJogadoresAtual, placarIndex);
                             
-                            // Se o jogo começar com um NPC, defina o timer dele
                             if (!batataAtual->ehHumano) {
-                                npcPassTimer = (float)GetRandomValue(20, 150) / 100.0f; // 0.2 a 1.5s
+                                npcPassTimer = (float)GetRandomValue(20, 150) / 100.0f;
                             }
                             
                             telaAtual = GAMEPLAY;
@@ -404,17 +421,16 @@ int main(void) {
                 }
             } break;
 
-            // --- AJUSTE: LÓGICA DE GAMEPLAY TOTALMENTE REFEITA ---
             case GAMEPLAY: {
-                if (timerQueimou > 0.0f) { // Se alguém queimou, pausa o jogo
+                // (Lógica do Gameplay - Oculta para encurtar, sem alterações)
+                if (timerQueimou > 0.0f) {
                     timerQueimou -= GetFrameTime();
                     
-                    if (timerQueimou <= 0.0f) { // Fim da pausa, remove o jogador
-                        
+                    if (timerQueimou <= 0.0f) {
                         Jogador* jogadorEliminado = batataAtual;
                         adicionarAoPlacar(jogadorEliminado->nome);
                         
-                        batataAtual = batataAtual->prox; // Passa a batata para o próximo
+                        batataAtual = batataAtual->prox; 
                         removerJogador(listaJogadores, jogadorEliminado);
                         imprimirListaConsole(listaJogadores);
 
@@ -422,44 +438,35 @@ int main(void) {
                             adicionarAoPlacar(listaJogadores->head->nome);
                             telaAtual = END_GAME;
                         } else {
-                            // Prepara nova rodada
                             timerMusica = getNovoTimer(modoTimerAtual, tempoPersonalizado, numJogadoresAtual, placarIndex);
-                            // Se o próximo jogador for um NPC, define o timer de reação dele
                             if (!batataAtual->ehHumano) {
                                 npcPassTimer = (float)GetRandomValue(20, 150) / 100.0f;
                             }
                         }
                     }
-                } else { // Jogo rodando normal (ninguém queimou ainda)
-                    
-                    timerMusica -= GetFrameTime(); // O tempo da rodada continua correndo
+                } else { 
+                    timerMusica -= GetFrameTime();
 
-                    // "Música" parou (Queimou!)
                     if (timerMusica <= 0.0f) {
-                        timerQueimou = 2.0f; // Pausa por 2 segundos para mostrar quem queimou
+                        timerQueimou = 2.0f;
                     }
                     
-                    // Lógica de quem está com a batata
                     if (batataAtual->ehHumano) {
-                        // --- VEZ DO HUMANO ---
                         if (IsKeyPressed(KEY_SPACE)) {
-                            batataAtual = batataAtual->prox; // Passa a batata
+                            batataAtual = batataAtual->prox;
                             frameAnimBatata = (frameAnimBatata + 1) % 3;
                             
-                            // Se o próximo for NPC, define o timer dele
                             if (!batataAtual->ehHumano) {
                                 npcPassTimer = (float)GetRandomValue(20, 150) / 100.0f;
                             }
                         }
                     } else {
-                        // --- VEZ DO NPC ---
-                        npcPassTimer -= GetFrameTime(); // NPC "pensa"
+                        npcPassTimer -= GetFrameTime();
                         
-                        if (npcPassTimer <= 0.0f) { // NPC "decidiu" passar
-                            batataAtual = batataAtual->prox; // Passa a batata
+                        if (npcPassTimer <= 0.0f) {
+                            batataAtual = batataAtual->prox;
                             frameAnimBatata = (frameAnimBatata + 1) % 3;
                             
-                            // Se o próximo for NPC, define o timer dele
                             if (!batataAtual->ehHumano) {
                                 npcPassTimer = (float)GetRandomValue(20, 150) / 100.0f;
                             }
@@ -471,7 +478,7 @@ int main(void) {
             case END_GAME: {
                 // (Lógica do Fim de Jogo - Oculta para encurtar, sem ordenação)
                 if (!placarFoiOrdenado) {
-                    // ordenarPlacar(); // REMOVIDO para mostrar ordem de eliminação
+                    // ordenarPlacar(); // Deixamos desativado para ordem de eliminação
                     placarFoiOrdenado = true;
                 }
                 if (IsEnterPressed()) {
@@ -502,7 +509,7 @@ int main(void) {
 
         switch (telaAtual) {
             case MENU: {
-                // (Desenho do Menu - Oculto para encurtar, sem alterações)
+                // --- AJUSTE: Desenho do novo menu ---
                 Rectangle sourceRect = { 0, 0, (float)texMenu.width, (float)texMenu.height };
                 Rectangle destRect = {
                     centroTela.x,
@@ -517,7 +524,7 @@ int main(void) {
 
                 DrawTexturePro(texMenu, sourceRect, destRect, origin, 0.0f, WHITE);
                 
-                int posY = destRect.y + origin.y - 20; 
+                int posY = destRect.y + origin.y - 40; // Subi um pouco
                 
                 DrawText("Iniciar", centroTela.x - MeasureText("Iniciar", 30) / 2, posY, 30, (menuSelecao == 0) ? MAROON : DARKGRAY);
                 posY += 40;
@@ -525,12 +532,15 @@ int main(void) {
                 posY += 40;
                 DrawText(TextFormat("Modo Timer: < %s >", getModoTimerTexto(modoTimerAtual)), centroTela.x - MeasureText(TextFormat("Modo Timer: < %s >", getModoTimerTexto(modoTimerAtual)), 30) / 2, posY, 30, (menuSelecao == 2) ? MAROON : DARKGRAY);
                 posY += 40;
-                
-                int acaoSair = 3;
+                // Nova opção
+                DrawText(TextFormat("Modo de Jogo: < %s >", getModoJogoTexto(modoJogoAtual)), centroTela.x - MeasureText(TextFormat("Modo de Jogo: < %s >", getModoJogoTexto(modoJogoAtual)), 30) / 2, posY, 30, (menuSelecao == 3) ? MAROON : DARKGRAY);
+                posY += 40;
+
+                int acaoSair = 4;
                 if (modoTimerAtual == PERSONALIZADO) {
-                    DrawText(TextFormat("Tempo Fixo: < %.1f s >", tempoPersonalizado), centroTela.x - MeasureText(TextFormat("Tempo Fixo: < %.1f s >", tempoPersonalizado), 30) / 2, posY, 30, (menuSelecao == 3) ? MAROON : DARKGRAY);
+                    DrawText(TextFormat("Tempo Fixo: < %.1f s >", tempoPersonalizado), centroTela.x - MeasureText(TextFormat("Tempo Fixo: < %.1f s >", tempoPersonalizado), 30) / 2, posY, 30, (menuSelecao == 4) ? MAROON : DARKGRAY);
                     posY += 40;
-                    acaoSair = 4;
+                    acaoSair = 5;
                 }
                 DrawText("Sair", centroTela.x - MeasureText("Sair", 30) / 2, posY, 30, (menuSelecao == acaoSair) ? MAROON : DARKGRAY);
                 
@@ -552,7 +562,10 @@ int main(void) {
                         DrawRectangleRec(textBox, LIGHTGRAY);
                         DrawRectangleLinesEx(textBox, 1, GRAY);
                     }
-                    DrawText(playerNames[i], textBox.x + 5, textBox.y + 7, 20, BLACK);
+                    
+                    // --- AJUSTE: Adiciona (Humano) ou (NPC) ---
+                    const char* tipo = (modoJogoAtual == MULTIPLAYER || i == 0) ? "(Humano)" : "(NPC)";
+                    DrawText(TextFormat("%s %s", playerNames[i], tipo), textBox.x + 5, textBox.y + 7, 20, BLACK);
 
                     if (nameBoxAtiva && nameBoxSelecao == i && ((int)(GetTime() * 2) % 2 == 0)) {
                         float textWidth = MeasureText(playerNames[i], 20);
@@ -612,9 +625,9 @@ int main(void) {
                     DrawText(batataAtual->nome, centroTela.x - MeasureText(batataAtual->nome, 30) / 2, centroTela.y + 40, 30, MAROON);
                 }
                 
-                // --- AJUSTE: Aviso para o jogador humano ---
+                // --- AJUSTE: Aviso para o jogador humano (mostra o nome) ---
                 if (batataAtual != NULL && batataAtual->ehHumano && timerQueimou <= 0.0f) {
-                    DrawText("SUA VEZ!", centroTela.x - MeasureText("SUA VEZ!", 40) / 2, centroTela.y - 100, 40, RED);
+                    DrawText(TextFormat("VEZ DE %s!", TextToUpper(batataAtual->nome)), centroTela.x - MeasureText(TextFormat("VEZ DE %s!", TextToUpper(batataAtual->nome)), 40) / 2, centroTela.y - 100, 40, RED);
                     DrawText("Pressione ESPAÇO para passar!", centroTela.x - MeasureText("Pressione ESPAÇO para passar!", 20) / 2, centroTela.y - 60, 20, RED);
                 }
                 
@@ -627,7 +640,6 @@ int main(void) {
                 DrawText("FIM DE JOGO!", centroTela.x - MeasureText("FIM DE JOGO!", 40) / 2, 50, 40, LIGHTGRAY);
                 DrawText(TextFormat("O VENCEDOR É: %s", vencedor), centroTela.x - MeasureText(TextFormat("O VENCEDOR É: %s", vencedor), 30) / 2, 100, 30, GOLD);
 
-                // Posição do ranking centralizada
                 int rankingPosX = (int)centroTela.x;
                 int rankingPosY = 180; 
                 
