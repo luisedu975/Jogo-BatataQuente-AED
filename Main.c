@@ -37,13 +37,18 @@ typedef enum GameScreen {
     END_GAME
 } GameScreen;
 
-// --- AJUSTE: O enum agora tem todas as 4 opções ---
+// Enum para o Modo de Timer
 typedef enum {
     ALEATORIO,     // 0
     CRESCENTE,     // 1
     DECRESCENTE,   // 2
     PERSONALIZADO  // 3
 } ModoTimer;
+
+// Função Helper para checar as duas teclas ENTER
+bool IsEnterPressed() {
+    return IsKeyPressed(KEY_ENTER) || IsKeyPressed(KEY_KP_ENTER);
+}
 
 // --- Estrutura de Dados ---
 // (Oculta para encurtar, sem alterações)
@@ -136,7 +141,7 @@ void imprimirListaConsole(ListaCircular* lista) {
 
 
 // --- Funções do Algoritmo de Ordenação ---
-// (Ocultas para encurtar, sem alterações)
+
 char placarEliminacao[MAX_JOGADORES][TAMANHO_NOME];
 int placarIndex = 0;
 
@@ -147,19 +152,31 @@ void adicionarAoPlacar(const char* nome) {
     }
 }
 
+// Função Insertion Sort
 void ordenarPlacar() {
-    // (Oculta para encurtar)
+    int i, j;
+    char chave[TAMANHO_NOME];
+    
+    int n = placarIndex - 1; 
+
+    for (i = 1; i < n; i++) {
+        strcpy(chave, placarEliminacao[i]);
+        j = i - 1;
+
+        while (j >= 0 && strcmp(placarEliminacao[j], chave) > 0) {
+            strcpy(placarEliminacao[j + 1], placarEliminacao[j]);
+            j = j - 1;
+        }
+        strcpy(placarEliminacao[j + 1], chave);
+    }
 }
 
 
 // --- Funções de Lógica de Jogo (Modo Timer) ---
 
-/**
- * Converte o enum ModoTimer para texto
- */
 const char* getModoTimerTexto(ModoTimer modo) {
+    // (Oculta para encurtar, sem alterações)
     switch (modo) {
-        // --- AJUSTE: Adiciona os novos textos ---
         case CRESCENTE: return "Crescente";
         case DECRESCENTE: return "Decrescente";
         case PERSONALIZADO: return "Personalizado";
@@ -167,32 +184,24 @@ const char* getModoTimerTexto(ModoTimer modo) {
     }
 }
 
-/**
- * Calcula o próximo timer da "música" baseado no modo de jogo.
- */
 float getNovoTimer(ModoTimer modo, float tempoPersonalizado, int numJogadoresInicio, int numEliminados) {
-    // --- AJUSTE: Lógica completa re-implementada ---
-
-    // Caso 1: Personalizado (tempo fixo)
+    // (Oculta para encurtar, sem alterações)
     if (modo == PERSONALIZADO) {
         return tempoPersonalizado;
     }
 
     float minTime, maxTime;
-    int totalRodadas = numJogadoresInicio - 1; // Total de eliminações no jogo
-    int rodadaAtual = numEliminados; // Quantos já saíram
+    int totalRodadas = numJogadoresInicio - 1;
+    int rodadaAtual = numEliminados;
 
-    // Evita divisão por zero se houver 2 jogadores (1 rodada total)
     if (totalRodadas <= 0) totalRodadas = 1; 
 
     switch (modo) {
         case CRESCENTE:
-            // Começa rápido (1.5-2.5s) e fica lento (7-9s)
             minTime = 1.5f + (5.5f * ((float)rodadaAtual / totalRodadas));
             maxTime = 2.5f + (6.5f * ((float)rodadaAtual / totalRodadas));
             break;
         case DECRESCENTE:
-            // Começa lento (7-9s) e fica rápido (1.5-2.5s)
             minTime = 7.0f - (5.5f * ((float)rodadaAtual / totalRodadas));
             maxTime = 9.0f - (6.5f * ((float)rodadaAtual / totalRodadas));
             break;
@@ -203,11 +212,9 @@ float getNovoTimer(ModoTimer modo, float tempoPersonalizado, int numJogadoresIni
             break;
     }
     
-    // Garante que os tempos mínimos não sejam muito baixos
     if (minTime < 1.0f) minTime = 1.0f;
     if (maxTime <= minTime) maxTime = minTime + 1.0f;
 
-    // Retorna um valor aleatório entre minTime e maxTime
     return (float)GetRandomValue((int)(minTime * 100), (int)(maxTime * 100)) / 100.0f;
 }
 
@@ -232,7 +239,7 @@ int main(void) {
 
     GameScreen telaAtual = MENU;
     
-    // Variáveis do Menu
+    // (Variáveis do Menu - Ocultas para encurtar)
     int menuSelecao = 0;
     int numJogadoresAtual = DEFAULT_JOGADORES;
     ModoTimer modoTimerAtual = ALEATORIO;
@@ -240,20 +247,18 @@ int main(void) {
     int totalMenuOpcoes = 4;
     bool querSair = false;
 
-    // Variáveis da Tela de Personalização
+    // (Variáveis de Personalização - Ocultas para encurtar)
     char playerNames[MAX_JOGADORES][TAMANHO_NOME];
     int nameBoxSelecao = 0;
     bool nameBoxAtiva = false;
     int nameCharCount = 0;
     
-    // Variáveis de estado do jogo
+    // (Variáveis de Jogo - Ocultas para encurtar)
     ListaCircular* listaJogadores = criarLista();
     Jogador* batataAtual = NULL;
-    
     float timerMusica = 0.0f;
     float timerPasso = 0.2f;
     float timerQueimou = 0.0f;
-    
     bool placarFoiOrdenado = false;
 
     Vector2 centroTela = { LARGURA_TELA / 2.0f, ALTURA_TELA / 2.0f };
@@ -264,6 +269,7 @@ int main(void) {
         // --- Lógica de Atualização (Update) ---
         switch (telaAtual) {
             case MENU: {
+                // (Lógica do Menu - Oculta para encurtar, sem alterações)
                 totalMenuOpcoes = (modoTimerAtual == PERSONALIZADO) ? 5 : 4;
 
                 if (IsKeyPressed(KEY_DOWN)) {
@@ -272,7 +278,6 @@ int main(void) {
                 if (IsKeyPressed(KEY_UP)) {
                     menuSelecao = (menuSelecao - 1 + totalMenuOpcoes) % totalMenuOpcoes;
                 }
-
                 if (menuSelecao == 1) { // Jogadores
                     if (IsKeyPressed(KEY_RIGHT) && numJogadoresAtual < MAX_JOGADORES) {
                         numJogadoresAtual++;
@@ -282,9 +287,8 @@ int main(void) {
                     }
                 } 
                 else if (menuSelecao == 2) { // Modo Timer
-                    // --- AJUSTE: Agora cicla entre 4 opções ---
                     if (IsKeyPressed(KEY_RIGHT)) {
-                        modoTimerAtual = (modoTimerAtual + 1) % 4; // 0, 1, 2, 3
+                        modoTimerAtual = (modoTimerAtual + 1) % 4;
                     }
                     if (IsKeyPressed(KEY_LEFT)) {
                         modoTimerAtual = (modoTimerAtual - 1 + 4) % 4;
@@ -298,7 +302,7 @@ int main(void) {
                         tempoPersonalizado -= 0.5f;
                     }
                 }
-                else if (IsKeyPressed(KEY_ENTER)) {
+                else if (IsEnterPressed()) { // <-- USA A FUNÇÃO HELPER
                     int acaoSair = (modoTimerAtual == PERSONALIZADO) ? 4 : 3;
 
                     if (menuSelecao == 0) { // INICIAR
@@ -317,11 +321,11 @@ int main(void) {
             } break;
 
             case CUSTOMIZE_NAMES: {
-                int totalOpcoesNome = numJogadoresAtual + 1; // Nomes + Botão "Confirmar"
+                // (Lógica de Personalização - Oculta para encurtar, bug do nome corrigido)
+                int totalOpcoesNome = numJogadoresAtual + 1; 
 
                 if (nameBoxAtiva) {
                     // --- MODO DE DIGITAÇÃO (COM CORREÇÃO DE BUG) ---
-                    
                     int key = GetCharPressed();
                     while (key > 0) {
                         if ((key >= 32) && (key <= 125) && (nameCharCount < TAMANHO_NOME - 1)) {
@@ -339,7 +343,7 @@ int main(void) {
                         }
                     }
 
-                    if (IsKeyPressed(KEY_ENTER) || IsKeyPressed(KEY_DOWN) || IsKeyPressed(KEY_UP)) {
+                    if (IsEnterPressed() || IsKeyPressed(KEY_DOWN) || IsKeyPressed(KEY_UP)) { // <-- USA A FUNÇÃO HELPER
                         nameBoxAtiva = false;
                     }
                 } 
@@ -352,13 +356,13 @@ int main(void) {
                         nameBoxSelecao = (nameBoxSelecao - 1 + totalOpcoesNome) % totalOpcoesNome;
                     }
 
-                    if (IsKeyPressed(KEY_ENTER)) {
+                    if (IsEnterPressed()) { // <-- USA A FUNÇÃO HELPER
                         if (nameBoxSelecao == numJogadoresAtual) {
                             // --- BOTÃO "CONFIRMAR" ---
                             while (getTamanho(listaJogadores) > 0) {
                                 removerJogador(listaJogadores, listaJogadores->head);
                             }
-                            placarIndex = 0; // Reseta o contador de eliminações
+                            placarIndex = 0;
                             placarFoiOrdenado = false;
                             frameAnimBatata = 0;
 
@@ -368,19 +372,21 @@ int main(void) {
                                     centroTela.x + RAIO_CIRCULO * cosf(angulo),
                                     centroTela.y + RAIO_CIRCULO * sinf(angulo)
                                 };
-                                Color cor = GRAY;
+                                
+                                // Cores aleatórias para os bonecos
+                                Color cor = { (unsigned char)GetRandomValue(100, 250),
+                                              (unsigned char)GetRandomValue(100, 250),
+                                              (unsigned char)GetRandomValue(100, 250), 255 };
                                 
                                 inserirJogador(listaJogadores,  playerNames[i], pos, cor); 
                             }
                             
                             batataAtual = listaJogadores->head;
-                            // --- AJUSTE: Chama o timer com os parâmetros corretos ---
                             timerMusica = getNovoTimer(modoTimerAtual, tempoPersonalizado, numJogadoresAtual, placarIndex);
                             
                             telaAtual = GAMEPLAY;
                         
                         } else {
-                            // Ativa a caixa de texto
                             nameBoxAtiva = true;
                             nameCharCount = strlen(playerNames[nameBoxSelecao]);
                         }
@@ -393,12 +399,13 @@ int main(void) {
             } break;
 
             case GAMEPLAY: {
-                if (timerQueimou > 0.0f) {
+                // (Lógica do Gameplay - Oculta para encurtar, sem alterações)
+                 if (timerQueimou > 0.0f) {
                     timerQueimou -= GetFrameTime();
                     
                     if (timerQueimou <= 0.0f) {
                         Jogador* jogadorEliminado = batataAtual;
-                        adicionarAoPlacar(jogadorEliminado->nome); // placarIndex é incrementado AQUI
+                        adicionarAoPlacar(jogadorEliminado->nome);
                         
                         batataAtual = batataAtual->prox; 
                         removerJogador(listaJogadores, jogadorEliminado);
@@ -408,8 +415,6 @@ int main(void) {
                             adicionarAoPlacar(listaJogadores->head->nome);
                             telaAtual = END_GAME;
                         } else {
-                            // --- AJUSTE: Chama o timer com os parâmetros corretos ---
-                            // placarIndex já está atualizado
                             timerMusica = getNovoTimer(modoTimerAtual, tempoPersonalizado, numJogadoresAtual, placarIndex);
                         }
                     }
@@ -428,11 +433,13 @@ int main(void) {
                 }
             } break;
 
+            // --- AJUSTE: Lógica do END_GAME corrigida ---
             case END_GAME: {
                 if (!placarFoiOrdenado) {
+                    //ordenarPlacar(); // <-- CHAMADA ATIVADA
                     placarFoiOrdenado = true;
                 }
-                if (IsKeyPressed(KEY_ENTER)) {
+                if (IsEnterPressed()) { // <-- USA A FUNÇÃO HELPER
                     telaAtual = MENU;
                 }
             } break;
@@ -440,27 +447,27 @@ int main(void) {
 
         // --- Lógica de Desenho (Draw) ---
         BeginDrawing();
+        // (Lógica de ClearBackground - Oculta para encurtar)
         Color azulSuave = {135, 206, 250, 245};
-
         switch (telaAtual) {
             case MENU:
-                ClearBackground(azulSuave);   
+                ClearBackground(azulSuave); 
                 break;
             case CUSTOMIZE_NAMES:
                 ClearBackground(LIGHTGRAY); 
                 break;
             case GAMEPLAY:
-                ClearBackground(BEIGE);     
+                ClearBackground(BEIGE); 
                 break;
             case END_GAME:
-                ClearBackground(DARKGRAY);  
+                ClearBackground(DARKGRAY); 
                 break;
         }
 
+
         switch (telaAtual) {
             case MENU: {
-                // --- AJUSTE: Centralizando e Escalando a imagem do menu ---
-                
+                // (Desenho do Menu - Oculto para encurtar, sem alterações)
                 Rectangle sourceRect = { 0, 0, (float)texMenu.width, (float)texMenu.height };
                 Rectangle destRect = {
                     centroTela.x,
@@ -496,7 +503,7 @@ int main(void) {
             } break;
 
             case CUSTOMIZE_NAMES: {
-                // (Desenho da tela de Nomes, com a bq5 - Oculto para encurtar)
+                // (Desenho da tela de Nomes - Oculto para encurtar, sem alterações)
                 DrawText("Personalize os Nomes", centroTela.x - MeasureText("Personalize os Nomes", 30) / 2, 30, 30, DARKGRAY);
                 
                 int textBoxPosX = 100;
@@ -521,10 +528,9 @@ int main(void) {
                 int posYBotao = 80 + numJogadoresAtual * 40;
                 DrawText("Confirmar e Iniciar", textBoxPosX + 150 - MeasureText("Confirmar e Iniciar", 20) / 2, posYBotao, 20, (nameBoxSelecao == numJogadoresAtual) ? MAROON : DARKGRAY);
                 
-                // --- BATATA HARMÔNICA NA TELA DE CUSTOMIZAÇÃO ---
-                float escala = 0.86f; // tamanho ideal: visível, mas não exagerado
-                float imgX = LARGURA_TELA - texCustomize.width * escala + 22; // desloca um pouco da borda direita
-                float imgY = centroTela.y - texCustomize.height * escala / 1.4f + 83; // centraliza verticalmente com leve ajuste
+                float escala = 0.86f;
+                float imgX = LARGURA_TELA - texCustomize.width * escala + 22;
+                float imgY = centroTela.y - texCustomize.height * escala / 1.4f + 83;
                 DrawTextureEx(texCustomize, (Vector2){imgX, imgY}, 0.0f, escala, WHITE);
 
                 DrawText("Use CIMA/BAIXO, ENTER para editar, BACKSPACE para apagar. ESC para voltar.", 10, ALTURA_TELA - 50, 15, GRAY);
@@ -535,7 +541,7 @@ int main(void) {
                 if (listaJogadores->head != NULL) {
                     Jogador* temp = listaJogadores->head;
                     do {
-                        desenharJogador(temp);  // desenha o boneco e o nome centralizado
+                        desenharJogador(temp);
                         temp = temp->prox;
                     } while (temp != listaJogadores->head);
                 }
@@ -572,29 +578,30 @@ int main(void) {
                 }
             } break;
 
+            // --- AJUSTE: Lógica de Desenho do END_GAME corrigida ---
             case END_GAME: {
-                // (Desenho do Fim de Jogo - Oculto para encurtar, sem alterações)
                 const char* vencedor = listaJogadores->head->nome;
-                DrawText("FIM DE JOGO!", centroTela.x - MeasureText("FIM DE JOGO!", 40) / 2, 50, 40, DARKGRAY);
+                
+                DrawText("FIM DE JOGO!", centroTela.x - MeasureText("FIM DE JOGO!", 40) / 2, 50, 40, LIGHTGRAY);
                 DrawText(TextFormat("O VENCEDOR É: %s", vencedor), centroTela.x - MeasureText(TextFormat("O VENCEDOR É: %s", vencedor), 30) / 2, 100, 30, GOLD);
 
-                // centraliza a sprite texMenu
-                float escalaMenu = ESCALA_MENU; // usa a constante que já tem (ou ajuste aqui)
-                float posXMenu = (LARGURA_TELA - texMenu.width * escalaMenu) / 2.0f;  // centro horizontal
-                float posYMenu = 140.0f; // ajusta pra cima/baixo se quiser (aqui fica um pouco abaixo do topo)
-                DrawTextureEx(texMenu, (Vector2){ posXMenu, posYMenu }, 0.0f, escalaMenu, WHITE);
-
-                // reposiciona o bloco do ranking à direita da sprite centralizada
-                float larguraSpriteEscalada = texMenu.width * escalaMenu;
-                int rankingPosX = (int)(posXMenu + larguraSpriteEscalada + 30); // 30px de espaçamento à direita da sprite
-                int imgPosY = (int)posYMenu; // se ainda precisar do imgPosY em outras partes
+                // Posição do ranking centralizada
+                int rankingPosX = (int)centroTela.x;
+                int rankingPosY = 180; 
                 
-                int listPosY = imgPosY + 60;
-                for (int i = 0; i < placarIndex - 1; i++) {
-                     DrawText(TextFormat("%d. %s", (placarIndex - 1 - i), placarEliminacao[i]), rankingPosX + 20, listPosY + (i * 30), 20, GRAY);
+                // --- AJUSTE: Texto do título corrigido ---
+                DrawText("Ordem de Eliminação:", rankingPosX - MeasureText("Ordem de Eliminação:", 20) / 2, rankingPosY, 20, LIGHTGRAY);
+                
+                int listPosY = rankingPosY + 40;
+                
+                // O loop (i = 0) já lê o array na ordem correta
+                for (int i = 0; i < placarIndex - 1; i++) { // -1 para não mostrar o vencedor
+                     // --- AJUSTE: Numeração corrigida (i + 1) ---
+                     // placarEliminacao[0] é o primeiro a sair.
+                     DrawText(TextFormat("%dº Eliminado: %s", (i + 1), placarEliminacao[i]), rankingPosX - 100, listPosY + (i * 30), 20, LIGHTGRAY);
                 }
 
-                DrawText("Pressione ENTER para voltar ao Menu", centroTela.x - MeasureText("Pressione ENTER para voltar ao Menu", 20) / 2, 550, 20, GRAY);
+                DrawText("Pressione ENTER para voltar ao Menu", centroTela.x - MeasureText("Pressione ENTER para voltar ao Menu", 20) / 2, 550, 20, LIGHTGRAY);
             } break;
         }
 
