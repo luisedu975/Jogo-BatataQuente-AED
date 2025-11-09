@@ -26,6 +26,12 @@
 #define PATH_B6 "Sprites/Imagens/bq6.png"
 #define PATH_B5 "Sprites/Imagens/bq5.png"
 
+#define PATH_MUSIC "Audio/trilha.ogg"
+#define PATH_SFX_PASS "Audio/pass.wav"
+#define PATH_SFX_BURN "Audio/burn.wav"
+#define PATH_SFX_MOVE "Audio/move.wav"
+#define PATH_SFX_SELECT "Audio/select.wav"
+
 
 typedef enum GameScreen {
     MENU,
@@ -213,6 +219,9 @@ int main(void) {
     SetTargetFPS(60);
     srand(time(NULL));
 
+    InitAudioDevice();
+    SetMasterVolume(1.0f);
+
     Texture2D texMenu = LoadTexture(PATH_MENU);
     Texture2D texCustomize = LoadTexture(PATH_B5);
     Texture2D texBatataPassando1 = LoadTexture(PATH_B2);
@@ -249,7 +258,24 @@ int main(void) {
 
     Vector2 centroTela = { LARGURA_TELA / 2.0f, ALTURA_TELA / 2.0f };
 
+    Music trilha;
+    bool temTrilha = false;
+    if (FileExists(PATH_MUSIC)) {
+        trilha = LoadMusicStream(PATH_MUSIC);
+        SetMusicVolume(trilha, 0.6f);
+        PlayMusicStream(trilha);
+        temTrilha = true;
+    }
+
+    Sound sfxPass, sfxBurn, sfxMove, sfxSelect;
+    bool temSfxPass = false, temSfxBurn = false, temSfxMove = false, temSfxSelect = false;
+    if (FileExists(PATH_SFX_PASS)) { sfxPass = LoadSound(PATH_SFX_PASS); SetSoundVolume(sfxPass, 0.9f); temSfxPass = true; }
+    if (FileExists(PATH_SFX_BURN)) { sfxBurn = LoadSound(PATH_SFX_BURN); SetSoundVolume(sfxBurn, 1.0f); temSfxBurn = true; }
+    if (FileExists(PATH_SFX_MOVE)) { sfxMove = LoadSound(PATH_SFX_MOVE); SetSoundVolume(sfxMove, 0.6f); temSfxMove = true; }
+    if (FileExists(PATH_SFX_SELECT)) { sfxSelect = LoadSound(PATH_SFX_SELECT); SetSoundVolume(sfxSelect, 0.8f); temSfxSelect = true; }
+
     while (!WindowShouldClose() && !querSair) {
+        if (temTrilha) UpdateMusicStream(trilha);
 
         switch (telaAtual) {
             case MENU: {
@@ -257,44 +283,54 @@ int main(void) {
 
                 if (IsKeyPressed(KEY_DOWN)) {
                     menuSelecao = (menuSelecao + 1) % totalMenuOpcoes;
+                    if (temSfxMove) PlaySound(sfxMove);
                 }
                 if (IsKeyPressed(KEY_UP)) {
                     menuSelecao = (menuSelecao - 1 + totalMenuOpcoes) % totalMenuOpcoes;
+                    if (temSfxMove) PlaySound(sfxMove);
                 }
 
                 if (menuSelecao == 1) { 
                     if (IsKeyPressed(KEY_RIGHT) && numJogadoresAtual < MAX_JOGADORES) {
                         numJogadoresAtual++;
+                        if (temSfxMove) PlaySound(sfxMove);
                     }
                     if (IsKeyPressed(KEY_LEFT) && numJogadoresAtual > MIN_JOGADORES) {
                         numJogadoresAtual--;
+                        if (temSfxMove) PlaySound(sfxMove);
                     }
                 } 
                 else if (menuSelecao == 2) {
                     if (IsKeyPressed(KEY_RIGHT)) {
                         modoTimerAtual = (modoTimerAtual + 1) % 4;
+                        if (temSfxMove) PlaySound(sfxMove);
                     }
                     if (IsKeyPressed(KEY_LEFT)) {
                         modoTimerAtual = (modoTimerAtual - 1 + 4) % 4;
+                        if (temSfxMove) PlaySound(sfxMove);
                     }
                 } 
                 else if (menuSelecao == 3) { 
                     if (IsKeyPressed(KEY_RIGHT) || IsKeyPressed(KEY_LEFT)) {
                         modoJogoAtual = (modoJogoAtual == SOLO) ? MULTIPLAYER : SOLO;
+                        if (temSfxMove) PlaySound(sfxMove);
                     }
                 }
                 else if (menuSelecao == 4 && modoTimerAtual == PERSONALIZADO) { 
                     if (IsKeyPressed(KEY_RIGHT) && tempoPersonalizado < 20.0f) {
                         tempoPersonalizado += 0.5f;
+                        if (temSfxMove) PlaySound(sfxMove);
                     }
                     if (IsKeyPressed(KEY_LEFT) && tempoPersonalizado > 1.0f) {
                         tempoPersonalizado -= 0.5f;
+                        if (temSfxMove) PlaySound(sfxMove);
                     }
                 }
                 else if (IsEnterPressed()) {
                     int acaoSair = (modoTimerAtual == PERSONALIZADO) ? 5 : 4;
 
                     if (menuSelecao == 0) { 
+                        if (temSfxSelect) PlaySound(sfxSelect);
                         for (int i = 0; i < numJogadoresAtual; i++) {
                             sprintf(playerNames[i], "Jogador %d", i + 1);
                         }
@@ -304,6 +340,7 @@ int main(void) {
                         telaAtual = CUSTOMIZE_NAMES;
                     }
                     else if (menuSelecao == acaoSair) { 
+                        if (temSfxSelect) PlaySound(sfxSelect);
                         querSair = true;
                     }
                 }
@@ -335,13 +372,16 @@ int main(void) {
                 else {
                     if (IsKeyPressed(KEY_DOWN)) {
                         nameBoxSelecao = (nameBoxSelecao + 1) % totalOpcoesNome;
+                        if (temSfxMove) PlaySound(sfxMove);
                     }
                     if (IsKeyPressed(KEY_UP)) {
                         nameBoxSelecao = (nameBoxSelecao - 1 + totalOpcoesNome) % totalOpcoesNome;
+                        if (temSfxMove) PlaySound(sfxMove);
                     }
 
                     if (IsEnterPressed()) {
                         if (nameBoxSelecao == numJogadoresAtual) {
+                            if (temSfxSelect) PlaySound(sfxSelect);
                             while (getTamanho(listaJogadores) > 0) {
                                 removerJogador(listaJogadores, listaJogadores->head);
                             }
@@ -380,6 +420,7 @@ int main(void) {
                             telaAtual = GAMEPLAY;
                         
                         } else {
+                            if (temSfxSelect) PlaySound(sfxSelect);
                             nameBoxAtiva = true;
                             nameCharCount = strlen(playerNames[nameBoxSelecao]);
                         }
@@ -418,10 +459,15 @@ int main(void) {
 
                     if (timerMusica <= 0.0f) {
                         timerQueimou = 2.0f;
+                        if (temSfxBurn) PlaySound(sfxBurn);
                     }
                     
                     if (batataAtual->ehHumano) {
                         if (IsKeyPressed(KEY_SPACE)) {
+                            if (temSfxPass) {
+                                SetSoundPitch(sfxPass, 0.95f + (GetRandomValue(0, 10) / 100.0f));
+                                PlaySound(sfxPass);
+                            }
                             batataAtual = batataAtual->prox;
                             frameAnimBatata = (frameAnimBatata + 1) % 3;
                             
@@ -433,6 +479,10 @@ int main(void) {
                         npcPassTimer -= GetFrameTime();
                         
                         if (npcPassTimer <= 0.0f) {
+                            if (temSfxPass) {
+                                SetSoundPitch(sfxPass, 0.95f + (GetRandomValue(0, 10) / 100.0f));
+                                PlaySound(sfxPass);
+                            }
                             batataAtual = batataAtual->prox;
                             frameAnimBatata = (frameAnimBatata + 1) % 3;
                             
@@ -449,6 +499,7 @@ int main(void) {
                     placarFoiOrdenado = true;
                 }
                 if (IsEnterPressed()) {
+                    if (temSfxSelect) PlaySound(sfxSelect);
                     telaAtual = MENU;
                 }
             } break;
@@ -546,7 +597,6 @@ int main(void) {
             } break;
 
             case GAMEPLAY: {
-                // (Desenho do Gameplay)
                 if (listaJogadores->head != NULL) {
                     Jogador* temp = listaJogadores->head;
                     do {
@@ -628,6 +678,13 @@ int main(void) {
         removerJogador(listaJogadores, listaJogadores->head);
     }
     free(listaJogadores);
+    
+    if (temSfxPass) UnloadSound(sfxPass);
+    if (temSfxBurn) UnloadSound(sfxBurn);
+    if (temSfxMove) UnloadSound(sfxMove);
+    if (temSfxSelect) UnloadSound(sfxSelect);
+    if (temTrilha) UnloadMusicStream(trilha);
+    CloseAudioDevice();
     CloseWindow();
 
     return 0;
