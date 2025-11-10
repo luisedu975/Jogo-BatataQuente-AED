@@ -8,6 +8,7 @@ typedef struct Jogador {
     Vector2 posTela;
     Color cor;
     bool ehHumano;
+    int indiceSprite;
     struct Jogador* prox;
 } Jogador;
 
@@ -21,7 +22,7 @@ typedef struct {
 
 ListaCircular* criarRoda(void);
 void destruirRoda(ListaCircular* roda);
-Jogador* criarJogador(const char* nome, Vector2 pos, Color cor, bool ehHumano);
+Jogador* criarJogador(const char* nome, Vector2 pos, Color cor, bool ehHumano, int indiceSprite);
 void inserirNaRoda(ListaCircular* roda, Jogador* novoJogador);
 Jogador* removerDaRoda(ListaCircular* roda, Jogador* jogadorEliminado);
 int contarJogadores(ListaCircular* roda);

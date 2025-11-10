@@ -1,6 +1,8 @@
 #include "jogador.h"
 #include <stdlib.h> 
 #include <string.h> 
+#define ESCALA_JOGADOR 0.045f
+extern Texture2D texturasJogadores[MAX_JOGADORES];
 
 ListaCircular* criarRoda(void) {
     ListaCircular* lista = (ListaCircular*)malloc(sizeof(ListaCircular));
@@ -20,7 +22,7 @@ void destruirRoda(ListaCircular* roda) {
     free(roda);
 }
 
-Jogador* criarJogador(const char* nome, Vector2 pos, Color cor, bool ehHumano) {
+Jogador* criarJogador(const char* nome, Vector2 pos, Color cor, bool ehHumano, int indiceSprite) {
     Jogador* novo = (Jogador*)malloc(sizeof(Jogador));
     if (novo == NULL) return NULL;
     
@@ -29,6 +31,7 @@ Jogador* criarJogador(const char* nome, Vector2 pos, Color cor, bool ehHumano) {
     novo->posTela = pos;
     novo->cor = cor;
     novo->ehHumano = ehHumano;
+    novo->indiceSprite = indiceSprite; // <--- ADICIONE ESTA LINHA
     novo->prox = NULL; 
     
     return novo;
@@ -91,14 +94,24 @@ Jogador* passarBatata(Jogador* jogadorAtual) {
 }
 
 void desenharJogadorNaTela(Jogador* j) {
-    Vector2 pos = j->posTela;
-    DrawCircleV((Vector2){pos.x, pos.y - 35}, 15, j->cor);
-    DrawRectangleV((Vector2){pos.x - 12, pos.y - 20}, (Vector2){24, 40}, j->cor);
-    DrawLine(pos.x - 28, pos.y, pos.x + 28, pos.y, j->cor);
-    DrawLine(pos.x - 12, pos.y + 20, pos.x - 6, pos.y + 50, j->cor);
-    DrawLine(pos.x + 12, pos.y + 20, pos.x + 6, pos.y + 50, j->cor);
-    
+    if (j == NULL) return;
+    Texture2D sprite = texturasJogadores[j->indiceSprite];
+    float escala = ESCALA_JOGADOR; 
+    Vector2 origin = {
+        (sprite.width * escala) / 2.0f,
+        (sprite.height * escala) / 2.0f
+    };
+    Rectangle sourceRect = { 0.0f, 0.0f, (float)sprite.width, (float)sprite.height };
+    Rectangle destRect = {
+        j->posTela.x,
+        j->posTela.y,
+        sprite.width * escala,
+        sprite.height * escala
+    };
+    DrawTexturePro(sprite, sourceRect, destRect, origin, 0.0f, WHITE);
     int fontSize = 15;
     float textWidth = MeasureText(j->nome, fontSize);
-    DrawText(j->nome, pos.x - textWidth / 2, pos.y + 55, fontSize, BLACK);
+    float nomePosY = j->posTela.y + origin.y + 10; // Posição abaixo do sprite
+    
+    DrawText(j->nome, j->posTela.x - textWidth / 2, nomePosY, fontSize, BLACK);
 }

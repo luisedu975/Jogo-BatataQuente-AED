@@ -9,6 +9,8 @@
 #include "jogador.h"
 #include "placar.h"
 
+Texture2D texturasJogadores[MAX_JOGADORES];
+
 int main(void) {
     
     InitWindow(LARGURA_TELA, ALTURA_TELA, "Batata Quente Circular (AED) - Refatorado");
@@ -17,6 +19,17 @@ int main(void) {
 
     InitAudioDevice();
     SetMasterVolume(1.0f);
+    for (int i = 0; i < MAX_JOGADORES; i++) {
+    char path[100];
+    sprintf(path, "Sprites/Imagens/Boneco %d.png", i + 1);
+    
+    if (FileExists(path)) {
+        texturasJogadores[i] = LoadTexture(path);
+    } else {
+        printf("AVISO: Sprite %s nao encontrado!\n", path);
+        texturasJogadores[i] = LoadTexture(PATH_B2); 
+    }
+}
 
     Texture2D texMenu = LoadTexture(PATH_MENU);
     Texture2D texCustomize = LoadTexture(PATH_B5);
@@ -25,7 +38,6 @@ int main(void) {
     Texture2D texBatataPassando3 = LoadTexture(PATH_B9);
     Texture2D texBatataQueimou = LoadTexture(PATH_B6);
     Texture2D texAnimBatata[3] = { texBatataPassando1, texBatataPassando2, texBatataPassando3 };
-
     Music trilha;
     bool temTrilha = false;
     if (FileExists(PATH_MUSIC)) {
@@ -45,7 +57,6 @@ int main(void) {
     GameScreen telaAtual = MENU;
     Vector2 centroTela = { LARGURA_TELA / 2.0f, ALTURA_TELA / 2.0f };
     bool querSair = false;
-    Texture2D texturasJogadores[MAX_JOGADORES];
     int menuSelecao = 0;
     int numJogadoresAtual = DEFAULT_JOGADORES;
     ModoTimer modoTimerAtual = ALEATORIO;
@@ -172,7 +183,7 @@ int main(void) {
                                 bool ehHumano = (modoJogoAtual == MULTIPLAYER) || (i == 0);
                                 
                                 
-                                Jogador* novo = criarJogador(playerNames[i], pos, cor, ehHumano); 
+                                Jogador* novo = criarJogador(playerNames[i], pos, cor, ehHumano, i); 
                                 inserirNaRoda(listaJogadores, novo);
                             }
                             
@@ -420,7 +431,9 @@ int main(void) {
     UnloadTexture(texBatataQueimou);
     
     destruirRoda(listaJogadores); 
-    
+    for (int i = 0; i < MAX_JOGADORES; i++) {
+    UnloadTexture(texturasJogadores[i]);
+    }
     if (temSfxPass) UnloadSound(sfxPass);
     if (temSfxBurn) UnloadSound(sfxBurn);
     if (temSfxMove) UnloadSound(sfxMove);
