@@ -252,7 +252,6 @@ int main(void) {
                             }
                         }
                     } 
-                    // Lógica de passagem (NPC)
                     else if (batataAtual != NULL && !batataAtual->ehHumano) {
                         npcPassTimer -= GetFrameTime();
                         if (npcPassTimer <= 0.0f) {
