@@ -1,6 +1,5 @@
 EXECUTAVEL = jogo.exe
-FONTES = main.c jogador.c placar.c utils.c
-
+FONTES = main.c jogador.c placar.c utils.c gameplay.c
 CFLAGS = -Wall -Wextra
 LDFLAGS = -lraylib -lglfw -lopengl32 -lwinmm -lgdi32 -lshell32
 

@@ -12,7 +12,7 @@
 #define ALTURA_TELA 600
 
 #define MIN_JOGADORES 2
-#define MAX_JOGADORES 12
+#define MAX_JOGADORES 6
 #define DEFAULT_JOGADORES 6
 
 #define RAIO_CIRCULO 200
@@ -59,6 +59,7 @@ typedef struct Jogador {
     Vector2 posTela;
     Color cor;
     bool ehHumano; 
+    int indiceSprite; 
     struct Jogador* prox;
 } Jogador;
 
@@ -68,9 +69,10 @@ typedef struct {
     int tamanho;
 } ListaCircular;
 
+extern Texture2D texturasJogadores[MAX_JOGADORES];
 
 ListaCircular* criarLista(void);
-Jogador* criarJogador(const char* nome, Vector2 pos, Color cor, bool ehHumano);
+Jogador* criarJogador(const char* nome, Vector2 pos, Color cor, bool ehHumano, int indiceSprite);
 void inserirNaRoda(ListaCircular* lista, Jogador* novo);
 void desenharJogador(Jogador* j);
 void removerDaRoda(ListaCircular* lista, Jogador* jogadorEliminado);
@@ -88,5 +90,7 @@ const char* getModoTimerTexto(ModoTimer modo);
 const char* getModoJogoTexto(ModoJogo modo);
 float getNovoTimer(ModoTimer modo, float tempoPersonalizado, int numJogadoresInicio, int numEliminados);
 void imprimirListaConsole(ListaCircular* lista);
+
+#include "gameplay.h"
 
 #endif 

@@ -45,7 +45,7 @@ int main(void) {
     GameScreen telaAtual = MENU;
     Vector2 centroTela = { LARGURA_TELA / 2.0f, ALTURA_TELA / 2.0f };
     bool querSair = false;
-
+    Texture2D texturasJogadores[MAX_JOGADORES];
     int menuSelecao = 0;
     int numJogadoresAtual = DEFAULT_JOGADORES;
     ModoTimer modoTimerAtual = ALEATORIO;
