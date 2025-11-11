@@ -344,28 +344,28 @@ int main(void) {
                 
                 int posY = destRect.y + origin.y + 15;
                 
-                DrawText("Iniciar", centroTela.x - MeasureText("Iniciar", 30) / 2, posY, 30, (menuSelecao == 0) ? MAROON : DARKGRAY);
+                DrawText("Iniciar", centroTela.x - MeasureText("Iniciar", 30) / 2, posY, 30, (menuSelecao == 0) ? MAROON : BLACK);
                 posY += 40;
-                DrawText(TextFormat("Jogadores: < %d >", numJogadoresAtual), centroTela.x - MeasureText(TextFormat("Jogadores: < %d >", numJogadoresAtual), 30) / 2, posY, 30, (menuSelecao == 1) ? MAROON : DARKGRAY);
+                DrawText(TextFormat("Jogadores: < %d >", numJogadoresAtual), centroTela.x - MeasureText(TextFormat("Jogadores: < %d >", numJogadoresAtual), 30) / 2, posY, 30, (menuSelecao == 1) ? MAROON : BLACK);
                 posY += 40;
-                DrawText(TextFormat("Jogadores Humanos: < %d >", numHumanos), centroTela.x - MeasureText(TextFormat("Jogadores Humanos: < %d >", numHumanos), 30) / 2, posY, 30, (menuSelecao == 2) ? MAROON : DARKGRAY);
+                DrawText(TextFormat("Jogadores Humanos: < %d >", numHumanos), centroTela.x - MeasureText(TextFormat("Jogadores Humanos: < %d >", numHumanos), 30) / 2, posY, 30, (menuSelecao == 2) ? MAROON : BLACK);
                 posY += 40;
-                DrawText(TextFormat("Modo Timer: < %s >", getModoTimerTexto(modoTimerAtual)), centroTela.x - MeasureText(TextFormat("Modo Timer: < %s >", getModoTimerTexto(modoTimerAtual)), 30) / 2, posY, 30, (menuSelecao == 3) ? MAROON : DARKGRAY);
+                DrawText(TextFormat("Modo Timer: < %s >", getModoTimerTexto(modoTimerAtual)), centroTela.x - MeasureText(TextFormat("Modo Timer: < %s >", getModoTimerTexto(modoTimerAtual)), 30) / 2, posY, 30, (menuSelecao == 3) ? MAROON : BLACK);
                 posY += 40;
 
                 int acaoSair = 4;
                 if (modoTimerAtual == PERSONALIZADO) {
-                    DrawText(TextFormat("Tempo Fixo: < %.1f s >", tempoPersonalizado), centroTela.x - MeasureText(TextFormat("Tempo Fixo: < %.1f s >", tempoPersonalizado), 30) / 2, posY, 30, (menuSelecao == 4) ? MAROON : DARKGRAY);
+                    DrawText(TextFormat("Tempo Fixo: < %.1f s >", tempoPersonalizado), centroTela.x - MeasureText(TextFormat("Tempo Fixo: < %.1f s >", tempoPersonalizado), 30) / 2, posY, 30, (menuSelecao == 4) ? MAROON : BLACK);
                     posY += 40;
                     acaoSair = 5;
                 }
-                DrawText("Sair", centroTela.x - MeasureText("Sair", 30) / 2, posY, 30, (menuSelecao == acaoSair) ? MAROON : DARKGRAY);
+                DrawText("Sair", centroTela.x - MeasureText("Sair", 30) / 2, posY, 30, (menuSelecao == acaoSair) ? MAROON : BLACK);
                 
-                DrawText("Use SETAS (CIMA/BAIXO/LADOS) para ajustar", 10, ALTURA_TELA - 30, 20, GRAY);
+                DrawText("Use SETAS (CIMA/BAIXO/LADOS) para ajustar", 10, ALTURA_TELA - 30, 20, BLACK);
             } break;
 
             case CUSTOMIZE_NAMES: {
-                DrawText("Personalize os Nomes", centroTela.x - MeasureText("Personalize os Nomes", 30) / 2, 30, 30, DARKGRAY);
+                DrawText("Personalize os Nomes", centroTela.x - MeasureText("Personalize os Nomes", 30) / 2, 30, 30, BLACK);
                 
                 int textBoxPosX = 100;
                 for (int i = 0; i < numJogadoresAtual; i++) {
@@ -389,14 +389,14 @@ int main(void) {
                 }
                 
                 int posYBotao = 80 + numJogadoresAtual * 40;
-                DrawText("Confirmar e Iniciar", textBoxPosX + 150 - MeasureText("Confirmar e Iniciar", 20) / 2, posYBotao, 20, (nameBoxSelecao == numJogadoresAtual) ? MAROON : DARKGRAY);
+                DrawText("Confirmar e Iniciar", textBoxPosX + 150 - MeasureText("Confirmar e Iniciar", 20) / 2, posYBotao, 20, (nameBoxSelecao == numJogadoresAtual) ? MAROON : BLACK);
                 
                 float escala = 0.86f;
                 float imgX = LARGURA_TELA - texCustomize.width * escala + 22;
                 float imgY = centroTela.y - texCustomize.height * escala / 1.4f + 83;
                 DrawTextureEx(texCustomize, (Vector2){imgX, imgY}, 0.0f, escala, WHITE);
 
-                DrawText("Use CIMA/BAIXO, ENTER para editar, BACKSPACE para apagar. ESC para voltar.", 10, ALTURA_TELA - 50, 15, GRAY);
+                DrawText("Use CIMA/BAIXO, ENTER para editar, BACKSPACE para apagar. ESC para voltar.", 10, ALTURA_TELA - 50, 15, BLACK);
             } break;
 
             case GAMEPLAY: {
