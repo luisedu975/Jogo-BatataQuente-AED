@@ -18,6 +18,8 @@
 #define ESCALA_BATATA 0.25f
 #define ESCALA_MENU 0.5f
 
+#define PONTOS_POR_SEGUNDO 100.0f
+#define PONTOS_BONUS_SOBREVIVENCIA 100.0f
 
 #define PATH_MENU "Sprites/Imagens/menu principal.png"
 #define PATH_B2 "Sprites/Imagens/bq2.png"

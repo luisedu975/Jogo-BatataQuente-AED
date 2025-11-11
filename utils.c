@@ -1,6 +1,7 @@
 #include "utils.h"
-#include <math.h> 
-#include <stdlib.h> 
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
 bool IsEnterPressed() {
     return IsKeyPressed(KEY_ENTER) || IsKeyPressed(KEY_KP_ENTER);
@@ -26,13 +27,10 @@ float getNovoTimer(ModoTimer modo, float tempoPersonalizado, int numJogadoresIni
     if (modo == PERSONALIZADO) {
         return tempoPersonalizado;
     }
-    
     float minTime, maxTime;
     int totalRodadas = numJogadoresInicio - 1;
     int rodadaAtual = numEliminados;
-    
-    if (totalRodadas <= 0) totalRodadas = 1;
-    
+    if (totalRodadas <= 0) totalRodadas = 1; 
     switch (modo) {
         case CRESCENTE:
             minTime = 1.5f + (5.5f * ((float)rodadaAtual / totalRodadas));
@@ -48,9 +46,7 @@ float getNovoTimer(ModoTimer modo, float tempoPersonalizado, int numJogadoresIni
             maxTime = 8.0f;
             break;
     }
-    
     if (minTime < 1.0f) minTime = 1.0f;
     if (maxTime <= minTime) maxTime = minTime + 1.0f;
-    
     return (float)GetRandomValue((int)(minTime * 100), (int)(maxTime * 100)) / 100.0f;
 }

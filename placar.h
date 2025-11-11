@@ -3,10 +3,16 @@
 
 #include "utils.h" 
 
-extern char placarEliminacao[MAX_JOGADORES][TAMANHO_NOME];
+typedef struct {
+    char nome[TAMANHO_NOME];
+    float pontuacao;
+} PlacarEntry;
+
+extern PlacarEntry placarEliminacao[MAX_JOGADORES];
 extern int placarIndex;
-void adicionarAoPlacar(const char* nome);
+
+void adicionarAoPlacar(const char* nome, float pontuacao);
 void insertionSortPlacar(void);
 void resetarPlacar(void);
 
-#endif 
+#endif

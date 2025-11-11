@@ -1,4 +1,4 @@
-
+// main.c (Corrigido)
 #include "raylib.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,23 +13,23 @@ Texture2D texturasJogadores[MAX_JOGADORES];
 
 int main(void) {
     
-    InitWindow(LARGURA_TELA, ALTURA_TELA, "Batata Quente Circular (AED) - Refatorado");
+    InitWindow(LARGURA_TELA, ALTURA_TELA, "Batata Quente: Acumulador de Risco");
     SetTargetFPS(60);
     srand(time(NULL));
-
     InitAudioDevice();
     SetMasterVolume(1.0f);
+
     for (int i = 0; i < MAX_JOGADORES; i++) {
-    char path[100];
-    sprintf(path, "Sprites/Imagens/Boneco %d.png", i + 1);
-    
-    if (FileExists(path)) {
-        texturasJogadores[i] = LoadTexture(path);
-    } else {
-        printf("AVISO: Sprite %s nao encontrado!\n", path);
-        texturasJogadores[i] = LoadTexture(PATH_B2); 
+        char path[100];
+        sprintf(path, "Sprites/Imagens/Boneco %d.png", i + 1);
+        
+        if (FileExists(path)) {
+            texturasJogadores[i] = LoadTexture(path);
+        } else {
+            printf("AVISO: Sprite %s nao encontrado!\n", path);
+            texturasJogadores[i] = LoadTexture(PATH_B2); 
+        }
     }
-}
 
     Texture2D texMenu = LoadTexture(PATH_MENU);
     Texture2D texCustomize = LoadTexture(PATH_B5);
@@ -38,6 +38,7 @@ int main(void) {
     Texture2D texBatataPassando3 = LoadTexture(PATH_B9);
     Texture2D texBatataQueimou = LoadTexture(PATH_B6);
     Texture2D texAnimBatata[3] = { texBatataPassando1, texBatataPassando2, texBatataPassando3 };
+
     Music trilha;
     bool temTrilha = false;
     if (FileExists(PATH_MUSIC)) {
@@ -46,7 +47,6 @@ int main(void) {
         PlayMusicStream(trilha);
         temTrilha = true;
     }
-
     Sound sfxPass, sfxBurn, sfxMove, sfxSelect;
     bool temSfxPass = false, temSfxBurn = false, temSfxMove = false, temSfxSelect = false;
     if (FileExists(PATH_SFX_PASS)) { sfxPass = LoadSound(PATH_SFX_PASS); SetSoundVolume(sfxPass, 0.9f); temSfxPass = true; }
@@ -57,10 +57,11 @@ int main(void) {
     GameScreen telaAtual = MENU;
     Vector2 centroTela = { LARGURA_TELA / 2.0f, ALTURA_TELA / 2.0f };
     bool querSair = false;
+
     int menuSelecao = 0;
     int numJogadoresAtual = DEFAULT_JOGADORES;
     ModoTimer modoTimerAtual = ALEATORIO;
-    ModoJogo modoJogoAtual = SOLO;
+    int numHumanos = 1;
     float tempoPersonalizado = 5.0f;
     
     char playerNames[MAX_JOGADORES][TAMANHO_NOME];
@@ -94,15 +95,16 @@ int main(void) {
                 }
 
                 if (menuSelecao == 1) { 
-                    if (IsKeyPressed(KEY_RIGHT) && numJogadoresAtual < MAX_JOGADORES) { numJogadoresAtual++; if (temSfxMove) PlaySound(sfxMove); }
-                    if (IsKeyPressed(KEY_LEFT) && numJogadoresAtual > MIN_JOGADORES) { numJogadoresAtual--; if (temSfxMove) PlaySound(sfxMove); }
+                    if (IsKeyPressed(KEY_RIGHT) && numJogadoresAtual < MAX_JOGADORES) { numJogadoresAtual++; if (numHumanos > numJogadoresAtual) numHumanos = numJogadoresAtual; if (temSfxMove) PlaySound(sfxMove); }
+                    if (IsKeyPressed(KEY_LEFT) && numJogadoresAtual > MIN_JOGADORES) { numJogadoresAtual--; if (numHumanos > numJogadoresAtual) numHumanos = numJogadoresAtual; if (temSfxMove) PlaySound(sfxMove); }
                 }
                 else if (menuSelecao == 2) { 
-                    if (IsKeyPressed(KEY_RIGHT)) { modoTimerAtual = (modoTimerAtual + 1) % 4; if (temSfxMove) PlaySound(sfxMove); }
-                    if (IsKeyPressed(KEY_LEFT)) { modoTimerAtual = (modoTimerAtual - 1 + 4) % 4; if (temSfxMove) PlaySound(sfxMove); }
+                    if (IsKeyPressed(KEY_RIGHT) && numHumanos < numJogadoresAtual) { numHumanos++; if (temSfxMove) PlaySound(sfxMove); }
+                    if (IsKeyPressed(KEY_LEFT) && numHumanos > 1) { numHumanos--; if (temSfxMove) PlaySound(sfxMove); }
                 }
                 else if (menuSelecao == 3) { 
-                    if (IsKeyPressed(KEY_RIGHT) || IsKeyPressed(KEY_LEFT)) { modoJogoAtual = (modoJogoAtual == SOLO) ? MULTIPLAYER : SOLO; if (temSfxMove) PlaySound(sfxMove); }
+                    if (IsKeyPressed(KEY_RIGHT)) { modoTimerAtual = (modoTimerAtual + 1) % 4; if (temSfxMove) PlaySound(sfxMove); }
+                    if (IsKeyPressed(KEY_LEFT)) { modoTimerAtual = (modoTimerAtual - 1 + 4) % 4; if (temSfxMove) PlaySound(sfxMove); }
                 }
                 else if (menuSelecao == 4 && modoTimerAtual == PERSONALIZADO) { 
                     if (IsKeyPressed(KEY_RIGHT) && tempoPersonalizado < 20.0f) { tempoPersonalizado += 0.5f; if (temSfxMove) PlaySound(sfxMove); }
@@ -128,7 +130,7 @@ int main(void) {
             } break;
 
             case CUSTOMIZE_NAMES: {
-                int totalOpcoesNome = numJogadoresAtual + 1;
+                int totalOpcoesNome = numJogadoresAtual + 1; 
 
                 if (nameBoxAtiva) {
                     int key = GetCharPressed();
@@ -149,7 +151,7 @@ int main(void) {
                     if (IsEnterPressed() || IsKeyPressed(KEY_DOWN) || IsKeyPressed(KEY_UP)) {
                         nameBoxAtiva = false;
                     }
-                }
+                } 
                 else {
                     if (IsKeyPressed(KEY_DOWN)) {
                         nameBoxSelecao = (nameBoxSelecao + 1) % totalOpcoesNome;
@@ -166,7 +168,7 @@ int main(void) {
                             
                             destruirRoda(listaJogadores);
                             listaJogadores = criarRoda();
-                            resetarPlacar();
+                            resetarPlacar(); 
                             placarFoiOrdenado = false;
                             frameAnimBatata = 0;
 
@@ -180,8 +182,7 @@ int main(void) {
                                               (unsigned char)GetRandomValue(100, 250),
                                               (unsigned char)GetRandomValue(100, 250), 255 };
                                 
-                                bool ehHumano = (modoJogoAtual == MULTIPLAYER) || (i == 0);
-                                
+                                bool ehHumano = (i < numHumanos);
                                 
                                 Jogador* novo = criarJogador(playerNames[i], pos, cor, ehHumano, i); 
                                 inserirNaRoda(listaJogadores, novo);
@@ -210,18 +211,27 @@ int main(void) {
             } break;
 
             case GAMEPLAY: {
-                
                 if (timerQueimou > 0.0f) {
                     timerQueimou -= GetFrameTime();
                     
                     if (timerQueimou <= 0.0f) {
+                        
                         Jogador* jogadorEliminado = batataAtual;
-                        adicionarAoPlacar(jogadorEliminado->nome);
+                        
+                        adicionarAoPlacar(jogadorEliminado->nome, jogadorEliminado->pontuacao);
+
+                        Jogador* temp = listaJogadores->head;
+                        do {
+                            if (temp != jogadorEliminado) {
+                                temp->pontuacao += PONTOS_BONUS_SOBREVIVENCIA;
+                            }
+                            temp = temp->prox;
+                        } while (temp != listaJogadores->head);
                         
                         batataAtual = removerDaRoda(listaJogadores, jogadorEliminado); 
                         
                         if (contarJogadores(listaJogadores) == 1) { 
-                            adicionarAoPlacar(listaJogadores->head->nome); 
+                            adicionarAoPlacar(listaJogadores->head->nome, listaJogadores->head->pontuacao); 
                             telaAtual = END_GAME;
                         } else {
                             timerMusica = getNovoTimer(modoTimerAtual, tempoPersonalizado, numJogadoresAtual, placarIndex);
@@ -231,7 +241,12 @@ int main(void) {
                         }
                     }
                 } else {
+                    
                     timerMusica -= GetFrameTime();
+
+                    if (batataAtual != NULL) {
+                        batataAtual->pontuacao += (PONTOS_POR_SEGUNDO * GetFrameTime());
+                    }
 
                     if (timerMusica <= 0.0f) {
                         timerQueimou = 2.0f; 
@@ -305,9 +320,9 @@ int main(void) {
                 posY += 40;
                 DrawText(TextFormat("Jogadores: < %d >", numJogadoresAtual), centroTela.x - MeasureText(TextFormat("Jogadores: < %d >", numJogadoresAtual), 30) / 2, posY, 30, (menuSelecao == 1) ? MAROON : DARKGRAY);
                 posY += 40;
-                DrawText(TextFormat("Modo Timer: < %s >", getModoTimerTexto(modoTimerAtual)), centroTela.x - MeasureText(TextFormat("Modo Timer: < %s >", getModoTimerTexto(modoTimerAtual)), 30) / 2, posY, 30, (menuSelecao == 2) ? MAROON : DARKGRAY);
+                DrawText(TextFormat("Jogadores Humanos: < %d >", numHumanos), centroTela.x - MeasureText(TextFormat("Jogadores Humanos: < %d >", numHumanos), 30) / 2, posY, 30, (menuSelecao == 2) ? MAROON : DARKGRAY);
                 posY += 40;
-                DrawText(TextFormat("Modo de Jogo: < %s >", getModoJogoTexto(modoJogoAtual)), centroTela.x - MeasureText(TextFormat("Modo de Jogo: < %s >", getModoJogoTexto(modoJogoAtual)), 30) / 2, posY, 30, (menuSelecao == 3) ? MAROON : DARKGRAY);
+                DrawText(TextFormat("Modo Timer: < %s >", getModoTimerTexto(modoTimerAtual)), centroTela.x - MeasureText(TextFormat("Modo Timer: < %s >", getModoTimerTexto(modoTimerAtual)), 30) / 2, posY, 30, (menuSelecao == 3) ? MAROON : DARKGRAY);
                 posY += 40;
 
                 int acaoSair = 4;
@@ -336,7 +351,7 @@ int main(void) {
                         DrawRectangleLinesEx(textBox, 1, GRAY);
                     }
                     
-                    const char* tipo = (modoJogoAtual == MULTIPLAYER || i == 0) ? "(Humano)" : "(NPC)";
+                    const char* tipo = (i < numHumanos) ? "(Humano)" : "(NPC)";
                     DrawText(TextFormat("%s %s", playerNames[i], tipo), textBox.x + 5, textBox.y + 7, 20, BLACK);
 
                     if (nameBoxAtiva && nameBoxSelecao == i && ((int)(GetTime() * 2) % 2 == 0)) {
@@ -388,28 +403,29 @@ int main(void) {
                 }
                 
                 if (batataAtual != NULL && batataAtual->ehHumano && timerQueimou <= 0.0f) {
-                    DrawText(TextFormat("VEZ DE %s!", TextToUpper(batataAtual->nome)), centroTela.x - MeasureText(TextFormat("VEZ DE %s!", TextToUpper(batataAtual->nome)), 40) / 2, centroTela.y - 100, 40, RED);
+                    DrawText(TextFormat("VEZ DE %s!", TextToUpper(batataAtual->nome)), centroTela.x - MeasureText(TextFormat("VEZ DE %S!", TextToUpper(batataAtual->nome)), 40) / 2, centroTela.y - 100, 40, RED);
                     DrawText("Pressione ESPAÇO para passar!", centroTela.x - MeasureText("Pressione ESPAÇO para passar!", 20) / 2, centroTela.y - 60, 20, RED);
                 }
                 
             } break;
 
             case END_GAME: {
-                const char* vencedor = placarEliminacao[placarIndex - 1]; 
+                const char* vencedor = placarEliminacao[0].nome;
+                int pontuacaoVencedor = placarEliminacao[0].pontuacao;
                 
                 DrawText("FIM DE JOGO!", centroTela.x - MeasureText("FIM DE JOGO!", 40) / 2, 50, 40, LIGHTGRAY);
                 DrawText(TextFormat("O VENCEDOR É: %s", vencedor), centroTela.x - MeasureText(TextFormat("O VENCEDOR É: %s", vencedor), 30) / 2, 100, 30, GOLD);
+                DrawText(TextFormat("(%d Pontos)", pontuacaoVencedor), centroTela.x - MeasureText(TextFormat("(%d Pontos)", pontuacaoVencedor), 20) / 2, 140, 20, GOLD);
 
                 int rankingPosX = (int)centroTela.x;
-                int rankingPosY = 180;
+                int rankingPosY = 200; 
                 
-                DrawText("Ordem de Eliminação:", rankingPosX - MeasureText("Ordem de Eliminação:", 20) / 2, rankingPosY, 20, LIGHTGRAY);
+                DrawText("Ranking Final (Por Pontos):", rankingPosX - MeasureText("Ranking Final (Por Pontos):", 20) / 2, rankingPosY, 20, LIGHTGRAY);
                 
                 int listPosY = rankingPosY + 40;
                 
-               
-                for (int i = 0; i < placarIndex - 1; i++) {
-                     DrawText(TextFormat("%dº Eliminado: %s", (i + 1), placarEliminacao[i]), rankingPosX - 100, listPosY + (i * 30), 20, LIGHTGRAY);
+                for (int i = 1; i < placarIndex; i++) {
+                     DrawText(TextFormat("%d. %s - %d pts", (i + 1), placarEliminacao[i].nome, placarEliminacao[i].pontuacao), rankingPosX - 150, listPosY + ((i-1) * 30), 20, LIGHTGRAY);
                 }
 
                 DrawText("Pressione ENTER para voltar ao Menu", centroTela.x - MeasureText("Pressione ENTER para voltar ao Menu", 20) / 2, 550, 20, LIGHTGRAY);
@@ -428,7 +444,7 @@ int main(void) {
     
     destruirRoda(listaJogadores); 
     for (int i = 0; i < MAX_JOGADORES; i++) {
-    UnloadTexture(texturasJogadores[i]);
+        UnloadTexture(texturasJogadores[i]);
     }
     if (temSfxPass) UnloadSound(sfxPass);
     if (temSfxBurn) UnloadSound(sfxBurn);

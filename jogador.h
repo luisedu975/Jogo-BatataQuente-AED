@@ -1,6 +1,7 @@
 #ifndef JOGADOR_H
 #define JOGADOR_H
 
+#include "raylib.h"
 #include "utils.h" 
 
 typedef struct Jogador {
@@ -9,6 +10,7 @@ typedef struct Jogador {
     Color cor;
     bool ehHumano;
     int indiceSprite;
+    float pontuacao; 
     struct Jogador* prox;
 } Jogador;
 
@@ -18,7 +20,7 @@ typedef struct {
     int tamanho;
 } ListaCircular;
 
-
+extern Texture2D texturasJogadores[MAX_JOGADORES];
 
 ListaCircular* criarRoda(void);
 void destruirRoda(ListaCircular* roda);
@@ -29,4 +31,4 @@ int contarJogadores(ListaCircular* roda);
 Jogador* passarBatata(Jogador* jogadorAtual);
 void desenharJogadorNaTela(Jogador* j);
 
-#endif 
+#endif

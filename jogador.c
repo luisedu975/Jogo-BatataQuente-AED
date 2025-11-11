@@ -1,6 +1,9 @@
 #include "jogador.h"
 #include <stdlib.h> 
 #include <string.h> 
+#include <stdio.h>
+
+
 #define ESCALA_JOGADOR 0.045f
 extern Texture2D texturasJogadores[MAX_JOGADORES];
 
@@ -32,6 +35,7 @@ Jogador* criarJogador(const char* nome, Vector2 pos, Color cor, bool ehHumano, i
     novo->cor = cor;
     novo->ehHumano = ehHumano;
     novo->indiceSprite = indiceSprite; 
+    novo->pontuacao = 0.0f;
     novo->prox = NULL; 
     
     return novo;
@@ -114,4 +118,9 @@ void desenharJogadorNaTela(Jogador* j) {
     float nomePosY = j->posTela.y + origin.y + 10; 
     
     DrawText(j->nome, j->posTela.x - textWidth / 2, nomePosY, fontSize, BLACK);
+
+    char pontuacaoTexto[20];
+    sprintf(pontuacaoTexto, "%.0fpts", j->pontuacao);
+    textWidth = MeasureText(pontuacaoTexto, 10);
+    DrawText(pontuacaoTexto, j->posTela.x - textWidth / 2, nomePosY + 17, 10, DARKGRAY);
 }

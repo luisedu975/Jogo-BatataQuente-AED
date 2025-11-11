@@ -1,36 +1,40 @@
+// placar.c
 #include "placar.h"
 #include <string.h> 
 
-char placarEliminacao[MAX_JOGADORES][TAMANHO_NOME];
+PlacarEntry placarEliminacao[MAX_JOGADORES];
 int placarIndex = 0;
 
-void adicionarAoPlacar(const char* nome) {
+void adicionarAoPlacar(const char* nome, float pontuacao) {
     if (placarIndex < MAX_JOGADORES) {
-        strcpy(placarEliminacao[placarIndex], nome);
+        strcpy(placarEliminacao[placarIndex].nome, nome);
+        placarEliminacao[placarIndex].pontuacao = pontuacao; 
         placarIndex++;
     }
 }
 
 void insertionSortPlacar(void) {
     int i, j;
-    char chave[TAMANHO_NOME];
+    PlacarEntry chave; 
     
-    int n = placarIndex - 1; 
-    
+    int n = placarIndex; 
+
     for (i = 1; i < n; i++) {
-        strcpy(chave, placarEliminacao[i]);
+        chave = placarEliminacao[i]; 
         j = i - 1;
-        while (j >= 0 && strcmp(placarEliminacao[j], chave) > 0) {
-            strcpy(placarEliminacao[j + 1], placarEliminacao[j]);
+
+        while (j >= 0 && placarEliminacao[j].pontuacao < chave.pontuacao) {
+            placarEliminacao[j + 1] = placarEliminacao[j]; 
             j = j - 1;
         }
-        strcpy(placarEliminacao[j + 1], chave);
+        placarEliminacao[j + 1] = chave; 
     }
 }
 
 void resetarPlacar(void) {
     placarIndex = 0;
     for (int i = 0; i < MAX_JOGADORES; i++) {
-        placarEliminacao[i][0] = '\0';
+        placarEliminacao[i].nome[0] = '\0';
+        placarEliminacao[i].pontuacao = 0;
     }
 }
