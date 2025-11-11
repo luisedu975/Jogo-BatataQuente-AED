@@ -382,9 +382,6 @@ int main(void) {
                     DrawTexturePro(texBatataAtual, sourceRect, destRect, origin, 0.0f, WHITE);
                 }
 
-              
-                DrawText(TextFormat("Tempo: %.1f s", (timerMusica > 0) ? timerMusica : 0.0f), 10, 10, TAMANHO_FONTE, DARKGRAY);
-
                 if (timerQueimou > 0.0f) {
                     DrawText("QUEIMOU!", centroTela.x - MeasureText("QUEIMOU!", 60) / 2, centroTela.y - 30, 60, MAROON);
                     DrawText(batataAtual->nome, centroTela.x - MeasureText(batataAtual->nome, 30) / 2, centroTela.y + 40, 30, MAROON);
