@@ -10,6 +10,14 @@
 
 Texture2D texturasJogadores[MAX_JOGADORES];
 
+// --- Protótipos das funções de utils.c ---
+// (O corpo dessas funções deve estar em utils.c)
+bool IsEnterPressed(void);
+const char* getModoTimerTexto(ModoTimer modo);
+const char* getModoJogoTexto(ModoJogo modo);
+float getNovoTimer(ModoTimer modo, float tempoPersonalizado, int numJogadoresInicio, int numEliminados);
+
+
 int main(void) {
     
     InitWindow(LARGURA_TELA, ALTURA_TELA, "Batata Quente Tática");
@@ -37,7 +45,7 @@ int main(void) {
     Texture2D texBatataPassando3 = LoadTexture(PATH_B9);
     Texture2D texBatataQueimou = LoadTexture(PATH_B6);
     Texture2D texAnimBatata[3] = { texBatataPassando1, texBatataPassando2, texBatataPassando3 };
-
+    Texture2D texFundo = LoadTexture(PATH_FUNDO);
     Music trilha;
     bool temTrilha = false;
     if (FileExists(PATH_MUSIC)) {
@@ -93,19 +101,20 @@ int main(void) {
                     if (temSfxMove) PlaySound(sfxMove);
                 }
 
-                if (menuSelecao == 1) { 
+                if (menuSelecao == 1) { // Jogadores (Total)
                     if (IsKeyPressed(KEY_RIGHT) && numJogadoresAtual < MAX_JOGADORES) { numJogadoresAtual++; if (numHumanos > numJogadoresAtual) numHumanos = numJogadoresAtual; if (temSfxMove) PlaySound(sfxMove); }
                     if (IsKeyPressed(KEY_LEFT) && numJogadoresAtual > MIN_JOGADORES) { numJogadoresAtual--; if (numHumanos > numJogadoresAtual) numHumanos = numJogadoresAtual; if (temSfxMove) PlaySound(sfxMove); }
                 }
-                else if (menuSelecao == 2) { 
+                // --- AJUSTE: Lógica do Menu Corrigida ---
+                else if (menuSelecao == 2) { // Jogadores Humanos
                     if (IsKeyPressed(KEY_RIGHT) && numHumanos < numJogadoresAtual) { numHumanos++; if (temSfxMove) PlaySound(sfxMove); }
                     if (IsKeyPressed(KEY_LEFT) && numHumanos > 1) { numHumanos--; if (temSfxMove) PlaySound(sfxMove); }
                 }
-                else if (menuSelecao == 3) { 
+                else if (menuSelecao == 3) { // Modo Timer
                     if (IsKeyPressed(KEY_RIGHT)) { modoTimerAtual = (modoTimerAtual + 1) % 4; if (temSfxMove) PlaySound(sfxMove); }
                     if (IsKeyPressed(KEY_LEFT)) { modoTimerAtual = (modoTimerAtual - 1 + 4) % 4; if (temSfxMove) PlaySound(sfxMove); }
                 }
-                else if (menuSelecao == 4 && modoTimerAtual == PERSONALIZADO) { 
+                else if (menuSelecao == 4 && modoTimerAtual == PERSONALIZADO) { // Tempo Fixo
                     if (IsKeyPressed(KEY_RIGHT) && tempoPersonalizado < 20.0f) { tempoPersonalizado += 0.5f; if (temSfxMove) PlaySound(sfxMove); }
                     if (IsKeyPressed(KEY_LEFT) && tempoPersonalizado > 1.0f) { tempoPersonalizado -= 0.5f; if (temSfxMove) PlaySound(sfxMove); }
                 }
@@ -218,6 +227,7 @@ int main(void) {
                         Jogador* jogadorEliminado = batataAtual;
                         
                         adicionarAoPlacar(jogadorEliminado->nome, jogadorEliminado->pontuacao);
+
                         if (contarJogadores(listaJogadores) > 2) 
                         {
                             Jogador* temp = listaJogadores->head;
@@ -228,6 +238,7 @@ int main(void) {
                                 temp = temp->prox;
                             } while (temp != listaJogadores->head);
                         }
+                        
                         batataAtual = removerDaRoda(listaJogadores, jogadorEliminado); 
                         
                         if (contarJogadores(listaJogadores) == 1) { 
@@ -253,17 +264,31 @@ int main(void) {
                         if (temSfxBurn) PlaySound(sfxBurn);
                     }
                     
+                    // --- AJUSTE: Lógica de Pulo Tático ---
                     if (batataAtual != NULL && batataAtual->ehHumano) {
-                        if (IsKeyPressed(KEY_SPACE)) {
-                            if (temSfxPass) {
-                                SetSoundPitch(sfxPass, 0.95f + (GetRandomValue(0, 10) / 100.0f));
-                                PlaySound(sfxPass);
-                            }
-                            batataAtual = passarBatata(batataAtual); 
-                            frameAnimBatata = (frameAnimBatata + 1) % 3;
-                            
-                            if (!batataAtual->ehHumano) {
-                                npcPassTimer = (float)GetRandomValue(20, 150) / 100.0f;
+                        
+                        int passos = 0;
+                        if (IsKeyPressed(KEY_ONE)   || IsKeyPressed(KEY_KP_1)) passos = 1;
+                        if (IsKeyPressed(KEY_TWO)   || IsKeyPressed(KEY_KP_2)) passos = 2;
+                        if (IsKeyPressed(KEY_THREE) || IsKeyPressed(KEY_KP_3)) passos = 3;
+                        if (IsKeyPressed(KEY_FOUR)  || IsKeyPressed(KEY_KP_4)) passos = 4;
+                        if (IsKeyPressed(KEY_FIVE)  || IsKeyPressed(KEY_KP_5)) passos = 5;
+
+                        if (passos > 0) {
+                            // Validação: Não pular um N >= ao total de jogadores
+                            if (passos < contarJogadores(listaJogadores)) {
+                                
+                                if (temSfxPass) {
+                                    SetSoundPitch(sfxPass, 0.95f + (GetRandomValue(0, 10) / 100.0f));
+                                    PlaySound(sfxPass);
+                                }
+                                
+                                batataAtual = passarBatata(batataAtual, passos); // <-- CHAMA A FUNÇÃO CORRETA
+                                frameAnimBatata = (frameAnimBatata + 1) % 3;
+                                
+                                if (!batataAtual->ehHumano) {
+                                    npcPassTimer = (float)GetRandomValue(20, 150) / 100.0f;
+                                }
                             }
                         }
                     } 
@@ -274,7 +299,7 @@ int main(void) {
                                 SetSoundPitch(sfxPass, 0.95f + (GetRandomValue(0, 10) / 100.0f));
                                 PlaySound(sfxPass);
                             }
-                            batataAtual = passarBatata(batataAtual);
+                            batataAtual = passarBatata(batataAtual, 1); // NPC sempre passa 1
                             frameAnimBatata = (frameAnimBatata + 1) % 3;
                             
                             if (!batataAtual->ehHumano) {
@@ -294,11 +319,14 @@ int main(void) {
                     if (temSfxSelect) PlaySound(sfxSelect);
                     telaAtual = MENU;
                 }
+                if (IsKeyPressed(KEY_ESCAPE)) {
+                    querSair = true;
+                }
             } break;
         }
 
         BeginDrawing();
-        
+        DrawTexture(texFundo, 0, 0, WHITE);
         Color azulSuave = {135, 206, 250, 245};
         switch (telaAtual) {
             case MENU: ClearBackground(azulSuave); break;
@@ -314,7 +342,7 @@ int main(void) {
                 Vector2 origin = { (texMenu.width * ESCALA_MENU) / 2.0f, (texMenu.height * ESCALA_MENU) / 2.0f };
                 DrawTexturePro(texMenu, sourceRect, destRect, origin, 0.0f, WHITE);
                 
-                int posY = destRect.y + origin.y - 40;
+                int posY = destRect.y + origin.y + 15;
                 
                 DrawText("Iniciar", centroTela.x - MeasureText("Iniciar", 30) / 2, posY, 30, (menuSelecao == 0) ? MAROON : DARKGRAY);
                 posY += 40;
@@ -402,11 +430,15 @@ int main(void) {
                     DrawText(batataAtual->nome, centroTela.x - MeasureText(batataAtual->nome, 30) / 2, centroTela.y + 40, 30, MAROON);
                 }
                 
+                // --- AJUSTE: Texto de ajuda Tático Dinâmico e Estático ---
                 if (batataAtual != NULL && batataAtual->ehHumano && timerQueimou <= 0.0f) {
                     DrawText(TextFormat("VEZ DE %s!", TextToUpper(batataAtual->nome)), centroTela.x - MeasureText(TextFormat("VEZ DE %S!", TextToUpper(batataAtual->nome)), 40) / 2, centroTela.y - 100, 40, RED);
-                    DrawText("Pressione ESPAÇO para passar!", centroTela.x - MeasureText("Pressione ESPAÇO para passar!", 20) / 2, centroTela.y - 60, 20, RED);
+                    DrawText("PASSE A BATATA!", centroTela.x - MeasureText("PASSE A BATATA!", 20) / 2, centroTela.y - 60, 20, RED);
                 }
                 
+                DrawText("Pressione a barra de espaço para passar a bomba.", 10, ALTURA_TELA - 35, 10, BLACK);
+                DrawText("Para realizar um passe tático, utilize as teclas numéricas de 1 a 5, sendo que o número escolhido define quantos jogadores serão pulados.", 10, ALTURA_TELA - 15, 8, BLACK);
+
             } break;
 
             case END_GAME: {
@@ -414,16 +446,19 @@ int main(void) {
                 float pontuacaoVencedor = placarEliminacao[0].pontuacao;
                 
                 DrawText("FIM DE JOGO!", centroTela.x - MeasureText("FIM DE JOGO!", 40) / 2, 50, 40, LIGHTGRAY);
-                DrawText(TextFormat("O VENCEDOR FOI: %s (%.0f Pontos)", vencedor, pontuacaoVencedor), centroTela.x - MeasureText(TextFormat("O VENCEDOR FOI: %s (%.0f Pontos)", vencedor, pontuacaoVencedor), 30) / 2, 100, 30, GOLD);
+                DrawText(TextFormat("O VENCEDOR É: %s (%.0f Pontos)", vencedor, pontuacaoVencedor), centroTela.x - MeasureText(TextFormat("O VENCEDOR É: %s(%.0f Pontos)", vencedor, pontuacaoVencedor), 30) / 2, 100, 30, GOLD);
                 int rankingPosX = (int)centroTela.x;
                 int rankingPosY = 200; 
+                
                 DrawText("Ranking Final (Por Pontos):", rankingPosX - MeasureText("Ranking Final (Por Pontos):", 20) / 2, rankingPosY, 20, LIGHTGRAY);
+                
                 int listPosY = rankingPosY + 40;
                 
                 for (int i = 1; i < placarIndex; i++) {
                      DrawText(TextFormat("  %d. %s - %.0f pts", (i + 1), placarEliminacao[i].nome, placarEliminacao[i].pontuacao), rankingPosX - 150, listPosY + ((i-1) * 30), 20, LIGHTGRAY);
                 }
-                DrawText("Pressione ENTER para voltar ao Menu, ESC para sair.", centroTela.x - MeasureText("Pressione ENTER para voltar ao Menu, ESC para sair.", 20) / 2, 550, 20, LIGHTGRAY);
+
+                DrawText("Pressione ENTER para voltar ao Menu", centroTela.x - MeasureText("Pressione ENTER para voltar ao Menu", 20) / 2, 550, 20, LIGHTGRAY);
             } break;
         }
 

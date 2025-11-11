@@ -5,7 +5,7 @@
 
 
 #define LARGURA_TELA 800
-#define ALTURA_TELA 600
+#define ALTURA_TELA 700
 
 #define MIN_JOGADORES 2
 #define MAX_JOGADORES 12
@@ -15,7 +15,7 @@
 #define TAMANHO_FONTE 20
 #define TAMANHO_NOME 20
 
-#define ESCALA_BATATA 0.25f
+#define ESCALA_BATATA 0.15f
 #define ESCALA_MENU 0.5f
 
 #define PONTOS_POR_SEGUNDO 100.0f
@@ -27,6 +27,7 @@
 #define PATH_B9 "Sprites/Imagens/bq9.png"
 #define PATH_B6 "Sprites/Imagens/bq6.png"
 #define PATH_B5 "Sprites/Imagens/bq5.png"
+#define PATH_FUNDO "Sprites/Imagens/grama jogo.png"
 
 #define PATH_MUSIC "Audio/trilha.ogg"
 #define PATH_SFX_PASS "Audio/pass.wav"

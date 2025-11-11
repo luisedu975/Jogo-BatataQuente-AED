@@ -92,9 +92,16 @@ int contarJogadores(ListaCircular* roda) {
     return roda->tamanho;
 }
 
-Jogador* passarBatata(Jogador* jogadorAtual) {
+Jogador* passarBatata(Jogador* jogadorAtual, int passos) {
     if (jogadorAtual == NULL) return NULL;
-    return jogadorAtual->prox;
+    
+    Jogador* temp = jogadorAtual;
+    for (int i = 0; i < passos; i++) {
+        if (temp != NULL) {
+            temp = temp->prox;
+        }
+    }
+    return temp;
 }
 
 void desenharJogadorNaTela(Jogador* j) {

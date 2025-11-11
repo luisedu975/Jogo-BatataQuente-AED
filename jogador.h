@@ -28,7 +28,7 @@ Jogador* criarJogador(const char* nome, Vector2 pos, Color cor, bool ehHumano, i
 void inserirNaRoda(ListaCircular* roda, Jogador* novoJogador);
 Jogador* removerDaRoda(ListaCircular* roda, Jogador* jogadorEliminado);
 int contarJogadores(ListaCircular* roda);
-Jogador* passarBatata(Jogador* jogadorAtual);
+Jogador* passarBatata(Jogador* jogadorAtual, int passos);
 void desenharJogadorNaTela(Jogador* j);
 
 #endif
