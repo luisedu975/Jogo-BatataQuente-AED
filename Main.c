@@ -13,7 +13,7 @@ Texture2D texturasJogadores[MAX_JOGADORES];
 
 int main(void) {
     
-    InitWindow(LARGURA_TELA, ALTURA_TELA, "Batata Quente: Acumulador de Risco");
+    InitWindow(LARGURA_TELA, ALTURA_TELA, "Batata Quente Tática");
     SetTargetFPS(60);
     srand(time(NULL));
     InitAudioDevice();
@@ -219,15 +219,16 @@ int main(void) {
                         Jogador* jogadorEliminado = batataAtual;
                         
                         adicionarAoPlacar(jogadorEliminado->nome, jogadorEliminado->pontuacao);
-
-                        Jogador* temp = listaJogadores->head;
-                        do {
-                            if (temp != jogadorEliminado) {
-                                temp->pontuacao += PONTOS_BONUS_SOBREVIVENCIA;
-                            }
-                            temp = temp->prox;
-                        } while (temp != listaJogadores->head);
-                        
+                        if (contarJogadores(listaJogadores) > 2) 
+                        {
+                            Jogador* temp = listaJogadores->head;
+                            do {
+                                if (temp != jogadorEliminado) {
+                                    temp->pontuacao += PONTOS_BONUS_SOBREVIVENCIA;
+                                }
+                                temp = temp->prox;
+                            } while (temp != listaJogadores->head);
+                        }
                         batataAtual = removerDaRoda(listaJogadores, jogadorEliminado); 
                         
                         if (contarJogadores(listaJogadores) == 1) { 
@@ -411,24 +412,19 @@ int main(void) {
 
             case END_GAME: {
                 const char* vencedor = placarEliminacao[0].nome;
-                int pontuacaoVencedor = placarEliminacao[0].pontuacao;
+                float pontuacaoVencedor = placarEliminacao[0].pontuacao;
                 
                 DrawText("FIM DE JOGO!", centroTela.x - MeasureText("FIM DE JOGO!", 40) / 2, 50, 40, LIGHTGRAY);
-                DrawText(TextFormat("O VENCEDOR É: %s", vencedor), centroTela.x - MeasureText(TextFormat("O VENCEDOR É: %s", vencedor), 30) / 2, 100, 30, GOLD);
-                DrawText(TextFormat("(%d Pontos)", pontuacaoVencedor), centroTela.x - MeasureText(TextFormat("(%d Pontos)", pontuacaoVencedor), 20) / 2, 140, 20, GOLD);
-
+                DrawText(TextFormat("O VENCEDOR FOI: %s (%.0f Pontos)", vencedor, pontuacaoVencedor), centroTela.x - MeasureText(TextFormat("O VENCEDOR FOI: %s (%.0f Pontos)", vencedor, pontuacaoVencedor), 30) / 2, 100, 30, GOLD);
                 int rankingPosX = (int)centroTela.x;
                 int rankingPosY = 200; 
-                
                 DrawText("Ranking Final (Por Pontos):", rankingPosX - MeasureText("Ranking Final (Por Pontos):", 20) / 2, rankingPosY, 20, LIGHTGRAY);
-                
                 int listPosY = rankingPosY + 40;
                 
                 for (int i = 1; i < placarIndex; i++) {
-                     DrawText(TextFormat("%d. %s - %d pts", (i + 1), placarEliminacao[i].nome, placarEliminacao[i].pontuacao), rankingPosX - 150, listPosY + ((i-1) * 30), 20, LIGHTGRAY);
+                     DrawText(TextFormat("  %d. %s - %.0f pts", (i + 1), placarEliminacao[i].nome, placarEliminacao[i].pontuacao), rankingPosX - 150, listPosY + ((i-1) * 30), 20, LIGHTGRAY);
                 }
-
-                DrawText("Pressione ENTER para voltar ao Menu", centroTela.x - MeasureText("Pressione ENTER para voltar ao Menu", 20) / 2, 550, 20, LIGHTGRAY);
+                DrawText("Pressione ENTER para voltar ao Menu, ESC para sair.", centroTela.x - MeasureText("Pressione ENTER para voltar ao Menu, ESC para sair.", 20) / 2, 550, 20, LIGHTGRAY);
             } break;
         }
 

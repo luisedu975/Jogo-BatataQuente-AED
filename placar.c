@@ -35,6 +35,6 @@ void resetarPlacar(void) {
     placarIndex = 0;
     for (int i = 0; i < MAX_JOGADORES; i++) {
         placarEliminacao[i].nome[0] = '\0';
-        placarEliminacao[i].pontuacao = 0;
+        placarEliminacao[i].pontuacao = 0.0f;
     }
 }
