@@ -361,7 +361,7 @@ int main(void) {
                 }
                 DrawText("Sair", centroTela.x - MeasureText("Sair", 30) / 2, posY, 30, (menuSelecao == acaoSair) ? MAROON : BLACK);
                 
-                DrawText("Use SETAS (CIMA/BAIXO/LADOS) para ajustar", 10, ALTURA_TELA - 30, 20, BLACK);
+                DrawText("Use SETAS (CIMA/BAIXO/LADOS) e ENTER para ajustar.", 10, ALTURA_TELA - 30, 20, BLACK);
             } break;
 
             case CUSTOMIZE_NAMES: {
@@ -445,20 +445,20 @@ int main(void) {
                 const char* vencedor = placarEliminacao[0].nome;
                 float pontuacaoVencedor = placarEliminacao[0].pontuacao;
                 
-                DrawText("FIM DE JOGO!", centroTela.x - MeasureText("FIM DE JOGO!", 40) / 2, 50, 40, LIGHTGRAY);
+                DrawText("FIM DE JOGO!", centroTela.x - MeasureText("FIM DE JOGO!", 40) / 2, 50, 40, MAROON);
                 DrawText(TextFormat("O VENCEDOR É: %s (%.0f Pontos)", vencedor, pontuacaoVencedor), centroTela.x - MeasureText(TextFormat("O VENCEDOR É: %s(%.0f Pontos)", vencedor, pontuacaoVencedor), 30) / 2, 100, 30, GOLD);
                 int rankingPosX = (int)centroTela.x;
                 int rankingPosY = 200; 
                 
-                DrawText("Ranking Final (Por Pontos):", rankingPosX - MeasureText("Ranking Final (Por Pontos):", 20) / 2, rankingPosY, 20, LIGHTGRAY);
+                DrawText("Ranking Final (Por Pontos):", rankingPosX - MeasureText("Ranking Final (Por Pontos):", 20) / 2, rankingPosY, 20, BLACK);
                 
                 int listPosY = rankingPosY + 40;
                 
                 for (int i = 1; i < placarIndex; i++) {
-                     DrawText(TextFormat("  %d. %s - %.0f pts", (i + 1), placarEliminacao[i].nome, placarEliminacao[i].pontuacao), rankingPosX - 150, listPosY + ((i-1) * 30), 20, LIGHTGRAY);
+                     DrawText(TextFormat("  %d. %s - %.0f pts", (i + 1), placarEliminacao[i].nome, placarEliminacao[i].pontuacao), rankingPosX - 150, listPosY + ((i-1) * 30), 20, BLACK);
                 }
 
-                DrawText("Pressione ENTER para voltar ao Menu", centroTela.x - MeasureText("Pressione ENTER para voltar ao Menu", 20) / 2, 550, 20, LIGHTGRAY);
+                DrawText("Pressione ENTER para voltar ao Menu", centroTela.x - MeasureText("Pressione ENTER para voltar ao Menu", 20) / 2, 550, 20, BLACK);
             } break;
         }
 
