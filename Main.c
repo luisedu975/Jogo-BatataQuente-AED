@@ -432,10 +432,32 @@ int main(void) {
                 
                 // --- AJUSTE: Texto de ajuda Tático Dinâmico e Estático ---
                 if (batataAtual != NULL && batataAtual->ehHumano && timerQueimou <= 0.0f) {
-                    DrawText(TextFormat("VEZ DE %s!", TextToUpper(batataAtual->nome)), centroTela.x - MeasureText(TextFormat("VEZ DE %S!", TextToUpper(batataAtual->nome)), 40) / 2, centroTela.y - 100, 40, RED);
-                    DrawText("PASSE A BATATA!", centroTela.x - MeasureText("PASSE A BATATA!", 20) / 2, centroTela.y - 60, 20, RED);
+                    const char* textoVez = TextFormat("VEZ DE %s!", TextToUpper(batataAtual->nome));
+                    int tamanhoFontePrincipal = 30;
+                    int tamanhoFonteSecundaria = 20;
+
+                    // Calcula largura e altura aproximadas dos textos
+                    int larguraTextoVez = MeasureText(textoVez, tamanhoFontePrincipal);
+                    int larguraTextoPassar = MeasureText("PASSE A BATATA!", tamanhoFonteSecundaria);
+
+                    // Define uma posição central ajustada (um pouco mais para cima do meio)
+                    float posYCentro = centroTela.y - 20;  // <- ajuste vertical (subir para não bater nos jogadores)
+                    
+                    // Desenha texto principal
+                    DrawText(textoVez,
+                            centroTela.x - larguraTextoVez / 2,
+                            posYCentro,
+                            tamanhoFontePrincipal,
+                            RED);
+                    
+                    // Desenha subtítulo logo abaixo, centralizado em relação ao anterior
+                    DrawText("PASSE A BATATA!",
+                            centroTela.x - larguraTextoPassar / 2,
+                            posYCentro + 45, // espaço entre as linhas
+                            tamanhoFonteSecundaria,
+                            RED);
                 }
-                
+
                 DrawText("Pressione a barra de espaço para passar a bomba.", 10, ALTURA_TELA - 35, 10, BLACK);
                 DrawText("Para realizar um passe tático, utilize as teclas numéricas de 1 a 5, sendo que o número escolhido define quantos jogadores serão pulados.", 10, ALTURA_TELA - 15, 8, BLACK);
 
