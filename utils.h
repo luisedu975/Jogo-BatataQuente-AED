@@ -8,7 +8,7 @@
 #define ALTURA_TELA 700
 
 #define MIN_JOGADORES 2
-#define MAX_JOGADORES 12
+#define MAX_JOGADORES 6
 #define DEFAULT_JOGADORES 6
 
 #define RAIO_CIRCULO 200
