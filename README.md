@@ -99,11 +99,5 @@ Este projeto cumpre todos os requisitos obrigatórios da especificação da ativ
    - **Menu Interativo:** Possui quatro telas (Menu, Customização, Jogo, Ranking).  
    - **Interface Gráfica (Bônus):** Desenvolvido com a biblioteca **Raylib**.
 
----
 
-## ✨ Créditos
 
-Projeto desenvolvido com dedicação e espírito de equipe pelos alunos:  
-**João Victor Uchôa, Luis Eduardo Bérard, Pedro Guerra e Luis Guilherme Leiria**  
-
-Como parte da disciplina de **Algoritmos e Estruturas de Dados**, ministrada na **CESAR School**.
