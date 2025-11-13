@@ -430,32 +430,27 @@ int main(void) {
                     DrawText(batataAtual->nome, centroTela.x - MeasureText(batataAtual->nome, 30) / 2, centroTela.y + 40, 30, MAROON);
                 }
                 
-                // --- AJUSTE: Texto de ajuda Tático Dinâmico e Estático ---
                 if (batataAtual != NULL && batataAtual->ehHumano && timerQueimou <= 0.0f) {
                     const char* textoVez = TextFormat("VEZ DE %s!", TextToUpper(batataAtual->nome));
                     int tamanhoFontePrincipal = 30;
                     int tamanhoFonteSecundaria = 20;
 
-                    // Calcula largura e altura aproximadas dos textos
                     int larguraTextoVez = MeasureText(textoVez, tamanhoFontePrincipal);
                     int larguraTextoPassar = MeasureText("PASSE A BATATA!", tamanhoFonteSecundaria);
 
-                    // Define uma posição central ajustada (um pouco mais para cima do meio)
-                    float posYCentro = centroTela.y - 20;  // <- ajuste vertical (subir para não bater nos jogadores)
+                    float posYCentro = centroTela.y - 20;  
                     
-                    // Desenha texto principal
                     DrawText(textoVez,
                             centroTela.x - larguraTextoVez / 2,
-                            posYCentro,
+                            posYCentro + 60,
                             tamanhoFontePrincipal,
-                            RED);
+                            BLACK);
                     
-                    // Desenha subtítulo logo abaixo, centralizado em relação ao anterior
                     DrawText("PASSE A BATATA!",
                             centroTela.x - larguraTextoPassar / 2,
-                            posYCentro + 45, // espaço entre as linhas
+                            posYCentro - 290, 
                             tamanhoFonteSecundaria,
-                            RED);
+                            BLACK);
                 }
 
                 DrawText("Pressione a barra de espaço para passar a bomba.", 10, ALTURA_TELA - 35, 10, BLACK);
@@ -467,7 +462,7 @@ int main(void) {
                 const char* vencedor = placarEliminacao[0].nome;
                 float pontuacaoVencedor = placarEliminacao[0].pontuacao;
                 
-                DrawText("FIM DE JOGO!", centroTela.x - MeasureText("FIM DE JOGO!", 40) / 2, 50, 40, MAROON);
+                DrawText("FIM DE JOGO!", centroTela.x - MeasureText("FIM DE JOGO!", 40) / 2, 50, 40, WHITE);
                 DrawText(TextFormat("O VENCEDOR É: %s (%.0f Pontos)", vencedor, pontuacaoVencedor), centroTela.x - MeasureText(TextFormat("O VENCEDOR É: %s(%.0f Pontos)", vencedor, pontuacaoVencedor), 30) / 2, 100, 30, GOLD);
                 int rankingPosX = (int)centroTela.x;
                 int rankingPosY = 200; 
