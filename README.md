@@ -1,75 +1,103 @@
-# Jogo da Batata Quente
+# 🥔 Batata Quente Tática (AED)
 
 ### 📚 Disciplina: Algoritmos e Estruturas de Dados (AED)
 
 **Integrantes do grupo:**
-- **Luis Eduardo Bérard**  
-- **Pedro Guerra**  
-- **João Victor Uchoa**  
-- **Luis Guilherme Leiria**
+* Luis Eduardo Bérard
+* Pedro Guerra
+* João Victor Uchoa
+* Luis Guilherme Leiria
 
 ---
 
 ## 🎮 Sobre o Projeto
 
-O **Jogo da Batata Quente** é uma releitura digital de um clássico das brincadeiras infantis.  
-O objetivo é **simular a passagem da batata entre os jogadores**, testando reflexos, sorte e tempo de resposta — até que alguém acabe "queimado" pela batata! 🧨  
+Este trabalho é uma repaginação tática do clássico jogo "Batata Quente", desenvolvido em C com Raylib para a disciplina de Algoritmos e Estruturas de Dados.
 
-Desenvolvido como projeto da disciplina de **Algoritmos e Estruturas de Dados (AED)**, este trabalho tem como propósito aplicar os conceitos aprendidos ao longo da matéria, explorando:
+Abandonamos a sorte pura da brincadeira original e a substituímos por uma mecânica de **"Acumulador de Risco"**. O objetivo não é apenas sobreviver, mas acumular o máximo de pontos possível antes que a música (oculta) pare, arriscando ser eliminado.
 
-- Estruturas de dados dinâmicas (como listas encadeadas);  
-- Manipulação de elementos gráficos com **Raylib**;  
-- Organização modular de código em C;  
-- Controle de fluxo e lógica de jogo.
+O jogo foi totalmente refatorado em múltiplos arquivos (`main.c`, `jogador.c`, `placar.c`, `utils.c`), demonstrando uma organização de código modular.
 
 ---
 
-## ⚙️ Objetivo Acadêmico
+## 🕹️ Como Jogar: A Repaginação "Acumulador de Risco"
 
-Demonstrar a capacidade de **transformar lógica e estrutura de dados em uma aplicação interativa e divertida**, unindo:
-- Pensamento computacional;  
-- Criatividade;  
-- Boas práticas de programação em linguagem C.  
+O objetivo é ser o último jogador sobrevivente. O placar final é determinado pela pontuação.
 
-A proposta foi **criar um jogo clássico com base nos fundamentos de AED**, destacando a importância de estruturas eficientes e bem organizadas.
+### A Mecânica de Risco/Recompensa
 
----
+1.  **Recompensa (Ganhar Pontos):** Enquanto um jogador segura a batata, ele acumula pontos (`+100 pontos/segundo`).
+2.  **Risco (Ser Eliminado):** Um timer de rodada (oculto) está sempre correndo. Se esse timer zerar enquanto você segura a batata, você "queima" e é **eliminado**.
+3.  **Bônus de Sobrevivência:** Quando um jogador é eliminado, todos os outros jogadores que sobreviveram à rodada recebem um bônus (`+100 pontos`).
 
-## 🧩 Tecnologias Utilizadas
+### Controles Táticos (A Lista Circular em Ação)
 
-- **Linguagem:** C  
-- **Biblioteca Gráfica:** [Raylib](https://www.raylib.com/)  
-- **Paradigma:** Programação estruturada  
-- **IDE Recomendada:** Visual Studio Code  
+Esta não é uma passagem comum. O jogador humano tem controle tático sobre *para quem* passar a batata:
 
----
-
-## 🕹️ Como Jogar
-
-1. Execute o programa com o comando ./batata e inicie uma nova partida.  
-2. Os jogadores serão exibidos na tela com seus respectivos nomes.  
-3. A batata será passada aleatoriamente entre os jogadores.  
-4. Quando o tempo acabar... 💥 alguém ficará com a batata e será eliminado!  
-5. O jogo segue até restar apenas um vencedor. 👑  
+* **Vez do Humano:** Quando a batata está com você, o jogo exibe um aviso (`VEZ DE...`).
+* **Teclas [1] a [5] (ou Numpad):** Use as teclas numéricas para passar a batata.
+    * **[1]** passa para o jogador 1 casa à frente.
+    * **[2]** passa para o jogador 2 casas à frente (pulando 1).
+    * **[3]** passa para o jogador 3 casas à frente (pulando 2).
+    * ...e assim por diante.
+* **Restrição:** Você não pode escolher um pulo de valor igual ou maior que o número de jogadores restantes na roda (ex: com 3 jogadores, você não pode apertar [3], pois passaria para si mesmo).
 
 ---
 
-## 🧠 Conceitos Aplicados
+## 🚀 Como Compilar e Executar
 
-- **Listas Encadeadas:** para gerenciamento dinâmico dos jogadores.
-- **Listas Circulares:** para manter o fluxo contínuo da batata entre os jogadores.  
-- **Listas Duplamente Encadeadas:** para facilitar a remoção e navegação entre elementos.  
-- **Estruturas (structs):** para armazenar informações de cada participante.  
-- **Funções:** organização e clareza do código.  
-- **Controle de Estados:** manipulação dos diferentes momentos do jogo (menu, jogando, fim de jogo).  
+Este projeto foi desenvolvido em **C** e **Raylib**, utilizando o ambiente **MSYS2 (UCRT64)** no Windows.
 
----
+### 1. Pré-requisitos (MSYS2)
+
+Certifique-se de que você tem o `gcc` e a `raylib` instalados no seu terminal UCRT64:
+```bash
+pacman -S mingw-w64-ucrt-x86_64-gcc
+pacman -S mingw-w64-ucrt-x86_64-raylib
+
+🧩 2. Instruções de Compilação
+
+Navegue até a pasta raiz do projeto (onde está o `main.c`) e execute o seguinte comando para compilar todos os arquivos-fonte:
+
+```bash
+gcc main.c jogador.c placar.c utils.c -o jogo.exe -Wall -Wextra $(pkg-config --cflags --libs raylib)
+
+💡 Este comando usa pkg-config para linkar automaticamente a biblioteca Raylib e suas dependências.
+
+▶️ 3. Execução
+Após a compilação bem-sucedida, um arquivo jogo.exe será criado. Execute-o com:
+
+./jogo.exe
+
+## 🧠 Requisitos e Conceitos Aplicados
+
+Este projeto cumpre todos os requisitos obrigatórios da especificação da atividade prática:
+
+1. Estrutura de Dados na Lógica Central (Req. 3.a)
+
+Lista Circular Encadeada Simples (jogador.c)
+É o coração do jogo, armazena a "roda" de jogadores.
+A nova mecânica de "Passe Tático" (pular N casas) demonstra uma travessia complexa (jogador->prox->prox...) e um domínio da estrutura circular.
+
+2. Algoritmo de Ordenação (Req. 4)
+Insertion Sort (placar.c)
+Utilizado na tela END_GAME, ordena o placar final não por ordem alfabética ou de eliminação, mas pela pontuação final (decrescente), criando um Ranking dos Campeões baseado em performance.
+
+3. Funções da Estrutura de Dados (Req. 5)
+criarRoda(): Aloca e inicializa a lista.
+inserirNaRoda(): Adiciona um Jogador* no início da lista, mantendo a circularidade.
+removerDaRoda(): Remove um Jogador* específico (o "queimado") e religa a lista.
+contarJogadores(): Retorna o tamanho da lista (usado para validação de pulo).
+passarBatata(): Demonstra a travessia de N-passos na lista circular.
+
+4. Outros Requisitos
+
+Linguagem C: O projeto é 100% em C.
+Menu Interativo: Possui quatro telas (Menu, Customização, Jogo, Ranking).
+Interface Gráfica (Bônus): Desenvolvido com a biblioteca Raylib.
 
 ## ✨ Créditos
 
-Projeto desenvolvido com dedicação e espírito de equipe pelos alunos:  
-**Luis Eduardo Bérard, Pedro Guerra, João Victor Uchoa e Luis Guilherme Leiria**,  
-como parte da disciplina de **Algoritmos e Estruturas de Dados**,  
-ministrada na **CESAR School**.  
-
----
+Projeto desenvolvido com dedicação e espírito de equipe pelos alunos
+João Victor Uchôa, Luis Eduardo Bérard, Pedro Guerra e Luis Guilherme Leiria
+Como parte da disciplina de Algoritmos e Estruturas de Dados, ministrada na CESAR School.

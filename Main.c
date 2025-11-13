@@ -10,8 +10,6 @@
 
 Texture2D texturasJogadores[MAX_JOGADORES];
 
-// --- Protótipos das funções de utils.c ---
-// (O corpo dessas funções deve estar em utils.c)
 bool IsEnterPressed(void);
 const char* getModoTimerTexto(ModoTimer modo);
 const char* getModoJogoTexto(ModoJogo modo);
@@ -101,16 +99,16 @@ int main(void) {
                     if (temSfxMove) PlaySound(sfxMove);
                 }
 
-                if (menuSelecao == 1) { // Jogadores (Total)
+                if (menuSelecao == 1) { 
                     if (IsKeyPressed(KEY_RIGHT) && numJogadoresAtual < MAX_JOGADORES) { numJogadoresAtual++; if (numHumanos > numJogadoresAtual) numHumanos = numJogadoresAtual; if (temSfxMove) PlaySound(sfxMove); }
                     if (IsKeyPressed(KEY_LEFT) && numJogadoresAtual > MIN_JOGADORES) { numJogadoresAtual--; if (numHumanos > numJogadoresAtual) numHumanos = numJogadoresAtual; if (temSfxMove) PlaySound(sfxMove); }
                 }
-                // --- AJUSTE: Lógica do Menu Corrigida ---
-                else if (menuSelecao == 2) { // Jogadores Humanos
+                
+                else if (menuSelecao == 2) { 
                     if (IsKeyPressed(KEY_RIGHT) && numHumanos < numJogadoresAtual) { numHumanos++; if (temSfxMove) PlaySound(sfxMove); }
                     if (IsKeyPressed(KEY_LEFT) && numHumanos > 1) { numHumanos--; if (temSfxMove) PlaySound(sfxMove); }
                 }
-                else if (menuSelecao == 3) { // Modo Timer
+                else if (menuSelecao == 3) { 
                     if (IsKeyPressed(KEY_RIGHT)) { modoTimerAtual = (modoTimerAtual + 1) % 4; if (temSfxMove) PlaySound(sfxMove); }
                     if (IsKeyPressed(KEY_LEFT)) { modoTimerAtual = (modoTimerAtual - 1 + 4) % 4; if (temSfxMove) PlaySound(sfxMove); }
                 }
@@ -264,18 +262,16 @@ int main(void) {
                         if (temSfxBurn) PlaySound(sfxBurn);
                     }
                     
-                    // --- AJUSTE: Lógica de Pulo Tático ---
                     if (batataAtual != NULL && batataAtual->ehHumano) {
                         
                         int passos = 0;
-                        if (IsKeyPressed(KEY_ONE)   || IsKeyPressed(KEY_KP_1)) passos = 1;
+                        if (IsKeyPressed(KEY_ONE) || IsKeyPressed(KEY_KP_1) || IsKeyPressed(KEY_SPACE)) passos = 1;
                         if (IsKeyPressed(KEY_TWO)   || IsKeyPressed(KEY_KP_2)) passos = 2;
                         if (IsKeyPressed(KEY_THREE) || IsKeyPressed(KEY_KP_3)) passos = 3;
                         if (IsKeyPressed(KEY_FOUR)  || IsKeyPressed(KEY_KP_4)) passos = 4;
                         if (IsKeyPressed(KEY_FIVE)  || IsKeyPressed(KEY_KP_5)) passos = 5;
 
                         if (passos > 0) {
-                            // Validação: Não pular um N >= ao total de jogadores
                             if (passos < contarJogadores(listaJogadores)) {
                                 
                                 if (temSfxPass) {
@@ -283,7 +279,7 @@ int main(void) {
                                     PlaySound(sfxPass);
                                 }
                                 
-                                batataAtual = passarBatata(batataAtual, passos); // <-- CHAMA A FUNÇÃO CORRETA
+                                batataAtual = passarBatata(batataAtual, passos); 
                                 frameAnimBatata = (frameAnimBatata + 1) % 3;
                                 
                                 if (!batataAtual->ehHumano) {
@@ -299,7 +295,7 @@ int main(void) {
                                 SetSoundPitch(sfxPass, 0.95f + (GetRandomValue(0, 10) / 100.0f));
                                 PlaySound(sfxPass);
                             }
-                            batataAtual = passarBatata(batataAtual, 1); // NPC sempre passa 1
+                            batataAtual = passarBatata(batataAtual, 1); 
                             frameAnimBatata = (frameAnimBatata + 1) % 3;
                             
                             if (!batataAtual->ehHumano) {
