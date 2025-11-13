@@ -66,38 +66,44 @@ gcc main.c jogador.c placar.c utils.c -o jogo.exe -Wall -Wextra $(pkg-config --c
 
 ▶️ 3. Execução
 Após a compilação bem-sucedida, um arquivo jogo.exe será criado. Execute-o com:
-
+```bash
 ./jogo.exe
+```
 
 ## 🧠 Requisitos e Conceitos Aplicados
 
 Este projeto cumpre todos os requisitos obrigatórios da especificação da atividade prática:
 
-1. Estrutura de Dados na Lógica Central (Req. 3.a)
+1. **Estrutura de Dados na Lógica Central (Req. 3.a)**
 
-Lista Circular Encadeada Simples (jogador.c)
-É o coração do jogo, armazena a "roda" de jogadores.
-A nova mecânica de "Passe Tático" (pular N casas) demonstra uma travessia complexa (jogador->prox->prox...) e um domínio da estrutura circular.
+   **Lista Circular Encadeada Simples (`jogador.c`)**  
+   É o coração do jogo, armazena a "roda" de jogadores.  
+   A nova mecânica de **"Passe Tático"** (pular N casas) demonstra uma travessia complexa (`jogador->prox->prox...`) e um domínio da estrutura circular.
 
-2. Algoritmo de Ordenação (Req. 4)
-Insertion Sort (placar.c)
-Utilizado na tela END_GAME, ordena o placar final não por ordem alfabética ou de eliminação, mas pela pontuação final (decrescente), criando um Ranking dos Campeões baseado em performance.
+2. **Algoritmo de Ordenação (Req. 4)**
 
-3. Funções da Estrutura de Dados (Req. 5)
-criarRoda(): Aloca e inicializa a lista.
-inserirNaRoda(): Adiciona um Jogador* no início da lista, mantendo a circularidade.
-removerDaRoda(): Remove um Jogador* específico (o "queimado") e religa a lista.
-contarJogadores(): Retorna o tamanho da lista (usado para validação de pulo).
-passarBatata(): Demonstra a travessia de N-passos na lista circular.
+   **Insertion Sort (`placar.c`)**  
+   Utilizado na tela **END_GAME**, ordena o placar final não por ordem alfabética ou de eliminação, mas pela pontuação final (decrescente), criando um **Ranking dos Campeões** baseado em performance.
 
-4. Outros Requisitos
+3. **Funções da Estrutura de Dados (Req. 5)**
 
-Linguagem C: O projeto é 100% em C.
-Menu Interativo: Possui quatro telas (Menu, Customização, Jogo, Ranking).
-Interface Gráfica (Bônus): Desenvolvido com a biblioteca Raylib.
+   - `criarRoda()`: Aloca e inicializa a lista.  
+   - `inserirNaRoda()`: Adiciona um `Jogador*` no início da lista, mantendo a circularidade.  
+   - `removerDaRoda()`: Remove um `Jogador*` específico (o "queimado") e religa a lista.  
+   - `contarJogadores()`: Retorna o tamanho da lista (usado para validação de pulo).  
+   - `passarBatata()`: Demonstra a travessia de N-passos na lista circular.
+
+4. **Outros Requisitos**
+
+   - **Linguagem C:** O projeto é 100% em C.  
+   - **Menu Interativo:** Possui quatro telas (Menu, Customização, Jogo, Ranking).  
+   - **Interface Gráfica (Bônus):** Desenvolvido com a biblioteca **Raylib**.
+
+---
 
 ## ✨ Créditos
 
-Projeto desenvolvido com dedicação e espírito de equipe pelos alunos
-João Victor Uchôa, Luis Eduardo Bérard, Pedro Guerra e Luis Guilherme Leiria
-Como parte da disciplina de Algoritmos e Estruturas de Dados, ministrada na CESAR School.
+Projeto desenvolvido com dedicação e espírito de equipe pelos alunos:  
+**João Victor Uchôa, Luis Eduardo Bérard, Pedro Guerra e Luis Guilherme Leiria**  
+
+Como parte da disciplina de **Algoritmos e Estruturas de Dados**, ministrada na **CESAR School**.
