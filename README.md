@@ -54,14 +54,14 @@ Certifique-se de que você tem o `gcc` e a `raylib` instalados no seu terminal U
 ```bash
 pacman -S mingw-w64-ucrt-x86_64-gcc
 pacman -S mingw-w64-ucrt-x86_64-raylib
-
+```
 🧩 2. Instruções de Compilação
 
 Navegue até a pasta raiz do projeto (onde está o `main.c`) e execute o seguinte comando para compilar todos os arquivos-fonte:
 
 ```bash
 gcc main.c jogador.c placar.c utils.c -o jogo.exe -Wall -Wextra $(pkg-config --cflags --libs raylib)
-
+```
 💡 Este comando usa pkg-config para linkar automaticamente a biblioteca Raylib e suas dependências.
 
 ▶️ 3. Execução
