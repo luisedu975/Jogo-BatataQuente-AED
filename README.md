@@ -3,9 +3,9 @@
 ### 📚 Disciplina: Algoritmos e Estruturas de Dados (AED)
 
 **Integrantes do grupo:**
+* João Victor Uchôa
 * Luis Eduardo Bérard
 * Pedro Guerra
-* João Victor Uchoa
 * Luis Guilherme Leiria
 
 ---
@@ -15,8 +15,6 @@
 Este trabalho é uma repaginação tática do clássico jogo "Batata Quente", desenvolvido em C com Raylib para a disciplina de Algoritmos e Estruturas de Dados.
 
 Abandonamos a sorte pura da brincadeira original e a substituímos por uma mecânica de **"Acumulador de Risco"**. O objetivo não é apenas sobreviver, mas acumular o máximo de pontos possível antes que a música (oculta) pare, arriscando ser eliminado.
-
-O jogo foi totalmente refatorado em múltiplos arquivos (`main.c`, `jogador.c`, `placar.c`, `utils.c`), demonstrando uma organização de código modular.
 
 ---
 
@@ -74,18 +72,18 @@ Após a compilação bem-sucedida, um arquivo jogo.exe será criado. Execute-o c
 
 Este projeto cumpre todos os requisitos obrigatórios da especificação da atividade prática:
 
-1. **Estrutura de Dados na Lógica Central (Req. 3.a)**
+1. **Estrutura de Dados na Lógica Central**
 
    **Lista Circular Encadeada Simples (`jogador.c`)**  
    É o coração do jogo, armazena a "roda" de jogadores.  
    A nova mecânica de **"Passe Tático"** (pular N casas) demonstra uma travessia complexa (`jogador->prox->prox...`) e um domínio da estrutura circular.
 
-2. **Algoritmo de Ordenação (Req. 4)**
+2. **Algoritmo de Ordenação**
 
    **Insertion Sort (`placar.c`)**  
    Utilizado na tela **END_GAME**, ordena o placar final não por ordem alfabética ou de eliminação, mas pela pontuação final (decrescente), criando um **Ranking dos Campeões** baseado em performance.
 
-3. **Funções da Estrutura de Dados (Req. 5)**
+3. **Algumas funções da Estrutura de Dados**
 
    - `criarRoda()`: Aloca e inicializa a lista.  
    - `inserirNaRoda()`: Adiciona um `Jogador*` no início da lista, mantendo a circularidade.  
