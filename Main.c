@@ -49,7 +49,7 @@ int main(void) {
     if (FileExists(PATH_MUSIC)) {
         trilha = LoadMusicStream(PATH_MUSIC);
         SetMusicVolume(trilha, 1.4f);
-        PlayMusicStream(trilha);
+        // PlayMusicStream(trilha);
         temTrilha = true;
     }
     Sound sfxPass, sfxBurn, sfxMove, sfxSelect;
@@ -84,8 +84,7 @@ int main(void) {
     bool placarFoiOrdenado = false;
 
     while (!WindowShouldClose() && !querSair) {
-        if (temTrilha) UpdateMusicStream(trilha);
-
+        if (temTrilha && IsMusicStreamPlaying(trilha)) UpdateMusicStream(trilha);
         switch (telaAtual) {
             case MENU: {
                 int totalMenuOpcoes = (modoTimerAtual == PERSONALIZADO) ? 6 : 5;
@@ -196,7 +195,7 @@ int main(void) {
                             
                             batataAtual = listaJogadores->head;
                             timerMusica = getNovoTimer(modoTimerAtual, tempoPersonalizado, numJogadoresAtual, placarIndex);
-                            
+                            if (temTrilha) PlayMusicStream(trilha); 
                             if (!batataAtual->ehHumano) {
                                 npcPassTimer = (float)GetRandomValue(20, 150) / 100.0f;
                             }
@@ -241,9 +240,11 @@ int main(void) {
                         
                         if (contarJogadores(listaJogadores) == 1) { 
                             adicionarAoPlacar(listaJogadores->head->nome, listaJogadores->head->pontuacao); 
+                            if (temTrilha) StopMusicStream(trilha); 
                             telaAtual = END_GAME;
                         } else {
                             timerMusica = getNovoTimer(modoTimerAtual, tempoPersonalizado, numJogadoresAtual, placarIndex);
+                            if (temTrilha) ResumeMusicStream(trilha); 
                             if (batataAtual != NULL && !batataAtual->ehHumano) {
                                 npcPassTimer = (float)GetRandomValue(20, 150) / 100.0f;
                             }
@@ -260,6 +261,7 @@ int main(void) {
                     if (timerMusica <= 0.0f) {
                         timerQueimou = 2.0f; 
                         if (temSfxBurn) PlaySound(sfxBurn);
+                        if (temTrilha) PauseMusicStream(trilha);
                     }
                     
                     if (batataAtual != NULL && batataAtual->ehHumano) {
@@ -313,6 +315,7 @@ int main(void) {
                 }
                 if (IsEnterPressed()) {
                     if (temSfxSelect) PlaySound(sfxSelect);
+                    if (temTrilha) StopMusicStream(trilha);
                     telaAtual = MENU;
                 }
                 if (IsKeyPressed(KEY_ESCAPE)) {

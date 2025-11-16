@@ -10,6 +10,14 @@
 
 ---
 
+
+## 🎥 Vídeo de Demonstração
+
+Para ver o jogo em ação, assista ao vídeo de demonstração:
+
+**[>> LINK do VÍDEO AQUI <<]**
+
+---
 ## 🎮 Sobre o Projeto
 
 Este trabalho é uma repaginação tática do clássico jogo "Batata Quente", desenvolvido em C com Raylib para a disciplina de Algoritmos e Estruturas de Dados.
@@ -17,7 +25,14 @@ Este trabalho é uma repaginação tática do clássico jogo "Batata Quente", de
 Abandonamos a sorte pura da brincadeira original e a substituímos por uma mecânica de **"Acumulador de Risco"**. O objetivo não é apenas sobreviver, mas acumular o máximo de pontos possível antes que a música (oculta) pare, arriscando ser eliminado.
 
 ---
+## 🚀 Recursos Principais
 
+* **Menu Interativo Completo:** Navegue por 4 telas (Menu, Customização de Nomes, Jogo, e Ranking Final).
+* [cite_start]**Modo Solo vs. Multiplayer:** Na tela de menu, escolha quantos jogadores são "Humanos" e quantos são "NPCs".
+* **Gameplay Tático:** O jogo não é só sorte. Use as teclas [1] a [5] para "mirar" a batata e pular jogadores específicos na roda.
+* **Timer Dinâmico:** Escolha entre 4 modos de jogo (Aleatório, Crescente, Decrescente, Personalizado) para definir a dificuldade e o ritmo das rodadas.
+* **Áudio e Sprites Customizados:** O jogo inclui sprites customizadas para cada jogador, música de fundo dinâmica (que para quando alguém "queima") e efeitos sonoros para passes e eliminações.
+---
 ## 🕹️ Como Jogar: A Repaginação "Acumulador de Risco"
 
 O objetivo é ser o último jogador sobrevivente. O placar final é determinado pela pontuação.
@@ -40,6 +55,33 @@ Esta não é uma passagem comum. O jogador humano tem controle tático sobre *pa
     * ...e assim por diante.
 * **Restrição:** Você não pode escolher um pulo de valor igual ou maior que o número de jogadores restantes na roda (ex: com 3 jogadores, você não pode apertar [3], pois passaria para si mesmo).
 
+---
+## 📂 Estrutura de Pastas
+
+Para que a compilação e execução funcionem, o projeto deve seguir a seguinte estrutura de arquivos. As texturas e sons **devem** estar dentro das pastas `Sprites/Imagens/` e `Audio/`.
+
+/Jogo-BatataQuente-AED
+|
+├── Sons/
+│ ├── trilha.ogg
+│ ├── pass.wav
+│ ├── burn.wav
+│ └── ...
+│
+├── Sprites/Imagens/
+│ ├── menu principal.png
+│ ├── bq2.png, bq4.png, ...
+│ └── Boneco 1.png, Boneco 2.png, ...
+│
+├── main.c
+├── jogador.c
+├── jogador.h
+├── placar.c
+├── placar.h
+├── utils.c
+├── utils.h
+└── README.md
+ 
 ---
 
 ## 🚀 Como Compilar e Executar
@@ -87,8 +129,8 @@ Este projeto cumpre todos os requisitos obrigatórios da especificação da ativ
 
    - `criarRoda()`: Aloca e inicializa a lista.  
    - `inserirNaRoda()`: Adiciona um `Jogador*` no início da lista, mantendo a circularidade.  
-   - `removerDaRoda()`: Remove um `Jogador*` específico (o "queimado") e religa a lista.  
-   - `contarJogadores()`: Retorna o tamanho da lista (usado para validação de pulo).  
+   - `removerDaRoda()`: Remove um `Jogador*` (o "queimado") e religa os ponteiros da lista.
+   - `contarJogadores()`: Retorna o tamanho da lista (usado para lógica de validação do pulo).  
    - `passarBatata()`: Demonstra a travessia de N-passos na lista circular.
 
 4. **Outros Requisitos**
