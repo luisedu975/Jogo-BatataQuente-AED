@@ -48,13 +48,13 @@ int main(void) {
     bool temTrilha = false;
     if (FileExists(PATH_MUSIC)) {
         trilha = LoadMusicStream(PATH_MUSIC);
-        SetMusicVolume(trilha, 0.6f);
+        SetMusicVolume(trilha, 1.4f);
         PlayMusicStream(trilha);
         temTrilha = true;
     }
     Sound sfxPass, sfxBurn, sfxMove, sfxSelect;
     bool temSfxPass = false, temSfxBurn = false, temSfxMove = false, temSfxSelect = false;
-    if (FileExists(PATH_SFX_PASS)) { sfxPass = LoadSound(PATH_SFX_PASS); SetSoundVolume(sfxPass, 0.9f); temSfxPass = true; }
+    if (FileExists(PATH_SFX_PASS)) { sfxPass = LoadSound(PATH_SFX_PASS); SetSoundVolume(sfxPass, 0.7f); temSfxPass = true; }
     if (FileExists(PATH_SFX_BURN)) { sfxBurn = LoadSound(PATH_SFX_BURN); SetSoundVolume(sfxBurn, 1.0f); temSfxBurn = true; }
     if (FileExists(PATH_SFX_MOVE)) { sfxMove = LoadSound(PATH_SFX_MOVE); SetSoundVolume(sfxMove, 0.6f); temSfxMove = true; }
     if (FileExists(PATH_SFX_SELECT)) { sfxSelect = LoadSound(PATH_SFX_SELECT); SetSoundVolume(sfxSelect, 0.8f); temSfxSelect = true; }

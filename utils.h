@@ -29,11 +29,11 @@
 #define PATH_B5 "Sprites/Imagens/bq5.png"
 #define PATH_FUNDO "Sprites/Imagens/grama jogo.png"
 
-#define PATH_MUSIC "Audio/trilha.ogg"
-#define PATH_SFX_PASS "Audio/pass.wav"
-#define PATH_SFX_BURN "Audio/burn.wav"
-#define PATH_SFX_MOVE "Audio/move.wav"
-#define PATH_SFX_SELECT "Audio/select.wav"
+#define PATH_MUSIC "Sprites/Sons/trilha.ogg"
+#define PATH_SFX_PASS "Sprites/Sons/pass.wav"
+#define PATH_SFX_BURN "Sprites/Sons/burn.wav"
+#define PATH_SFX_MOVE "Sprites/Sons/move.wav"
+#define PATH_SFX_SELECT "Sprites/Sons/select.wav"
 
 typedef enum GameScreen {
     MENU,
