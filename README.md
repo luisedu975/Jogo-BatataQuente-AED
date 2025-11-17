@@ -15,7 +15,7 @@
 
 Para ver o jogo em ação, assista ao vídeo de demonstração:
 
-**[>> LINK do VÍDEO AQUI <<]**
+**[>> https://youtu.be/40-sHfB6ZTE <<]**
 
 ---
 ## 🎮 Sobre o Projeto
