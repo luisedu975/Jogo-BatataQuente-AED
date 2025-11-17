@@ -28,7 +28,7 @@ Abandonamos a sorte pura da brincadeira original e a substituímos por uma mecâ
 ## 🚀 Recursos Principais
 
 * **Menu Interativo Completo:** Navegue por 4 telas (Menu, Customização de Nomes, Jogo, e Ranking Final).
-* [cite_start]**Modo Solo vs. Multiplayer:** Na tela de menu, escolha quantos jogadores são "Humanos" e quantos são "NPCs".
+* **Modo Solo vs. Multiplayer:** Na tela de menu, escolha quantos jogadores são "Humanos" e quantos são "NPCs".
 * **Gameplay Tático:** O jogo não é só sorte. Use as teclas [1] a [5] para "mirar" a batata e pular jogadores específicos na roda.
 * **Timer Dinâmico:** Escolha entre 4 modos de jogo (Aleatório, Crescente, Decrescente, Personalizado) para definir a dificuldade e o ritmo das rodadas.
 * **Áudio e Sprites Customizados:** O jogo inclui sprites customizadas para cada jogador, música de fundo dinâmica (que para quando alguém "queima") e efeitos sonoros para passes e eliminações.
@@ -138,6 +138,7 @@ Este projeto cumpre todos os requisitos obrigatórios da especificação da ativ
    - **Linguagem C:** O projeto é 100% em C.  
    - **Menu Interativo:** Possui quatro telas (Menu, Customização, Jogo, Ranking).  
    - **Interface Gráfica (Bônus):** Desenvolvido com a biblioteca **Raylib**.
+
 
 
 
