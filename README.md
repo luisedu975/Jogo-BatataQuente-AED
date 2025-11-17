@@ -55,34 +55,8 @@ Esta não é uma passagem comum. O jogador humano tem controle tático sobre *pa
     * ...e assim por diante.
 * **Restrição:** Você não pode escolher um pulo de valor igual ou maior que o número de jogadores restantes na roda (ex: com 3 jogadores, você não pode apertar [3], pois passaria para si mesmo).
 
+
 ---
-## 📂 Estrutura de Pastas
-
-Para que a compilação e execução funcionem, o projeto deve seguir a seguinte estrutura de arquivos. As texturas e sons **devem** estar dentro das pastas `Sprites/Imagens/` e `Audio/`.
-
-/Jogo-BatataQuente-AED
-|
-├── Sons/
-│ ├── trilha.ogg
-│ ├── pass.wav
-│ ├── burn.wav
-│ └── ...
-│
-├── Sprites/Imagens/
-│ ├── menu principal.png
-│ ├── bq2.png, bq4.png, ...
-│ └── Boneco 1.png, Boneco 2.png, ...
-│
-├── main.c
-├── jogador.c
-├── jogador.h
-├── placar.c
-├── placar.h
-├── utils.c
-├── utils.h
-└── README.md
- 
-
 
 ## 🚀 Como Compilar e Executar
 
@@ -138,6 +112,7 @@ Este projeto cumpre todos os requisitos obrigatórios da especificação da ativ
    - **Linguagem C:** O projeto é 100% em C.  
    - **Menu Interativo:** Possui quatro telas (Menu, Customização, Jogo, Ranking).  
    - **Interface Gráfica (Bônus):** Desenvolvido com a biblioteca **Raylib**.
+
 
 
 
