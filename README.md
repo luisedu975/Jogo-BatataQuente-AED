@@ -82,7 +82,7 @@ Para que a compilação e execução funcionem, o projeto deve seguir a seguinte
 ├── utils.h
 └── README.md
  
----
+
 
 ## 🚀 Como Compilar e Executar
 
@@ -138,6 +138,7 @@ Este projeto cumpre todos os requisitos obrigatórios da especificação da ativ
    - **Linguagem C:** O projeto é 100% em C.  
    - **Menu Interativo:** Possui quatro telas (Menu, Customização, Jogo, Ranking).  
    - **Interface Gráfica (Bônus):** Desenvolvido com a biblioteca **Raylib**.
+
 
 
 
